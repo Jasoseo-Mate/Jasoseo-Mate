@@ -202,6 +202,7 @@ def recommended_jobs(request):
                 "match_rate": match_rate,
                 "skills": list(job_skills) if job_skills else ["공통"],
                 "company_size": job.company_size,
+                "source": job.source,
             }
         )
 

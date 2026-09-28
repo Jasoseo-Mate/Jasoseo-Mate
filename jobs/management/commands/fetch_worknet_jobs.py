@@ -112,6 +112,7 @@ class Command(BaseCommand):
                     defaults={
                         "description": description,
                         "company_size": company_size,
+                        "source": JobPost.Source.WORK24,
                     },
                 )
                 if created:
@@ -119,7 +120,8 @@ class Command(BaseCommand):
                 else:
                     job.description = description
                     job.company_size = company_size
-                    job.save(update_fields=["description", "company_size"])
+                    job.source = JobPost.Source.WORK24
+                    job.save(update_fields=["description", "company_size", "source"])
                     updated_count += 1
 
                 job.required_skills.clear()

@@ -1,3 +1,4 @@
+import io
 import json
 import xml.etree.ElementTree as ET
 from unittest.mock import Mock, patch
@@ -10,7 +11,8 @@ from django.urls import reverse
 
 from resumes.models import CoverLetter
 
-from .models import JobPost
+from .models import JobPost, Skill
+from .management.commands.seed_demo_data import SAMPLE_JOBS, SKILL_NAMES
 from .management.commands.fetch_worknet_jobs import (
     Command,
     WORK24_JOB_DETAIL_API_URL,
@@ -108,7 +110,43 @@ class JobViewSecurityTests(TestCase):
                 </wanted></wantedRoot>
             """
         )
-        call_command("fetch_worknet_jobs")
+        call_command("fetch_worknet_jobs", stdout=io.StringIO())
         self.assertEqual(mocked_get.call_count, 1)
+        job = JobPost.objects.get(company_name="기존 회사", title="기존 공고")
+        self.assertEqual(job.source, JobPost.Source.WORK24)
 
-# Create your tests here.
+
+class DemoDataCommandTests(TestCase):
+    def test_seed_is_idempotent_and_marks_sample_jobs(self):
+        output = io.StringIO()
+
+        call_command("seed_demo_data", stdout=output)
+        first_job_count = JobPost.objects.count()
+        first_skill_count = Skill.objects.count()
+        call_command("seed_demo_data", stdout=output)
+
+        self.assertEqual(first_job_count, len(SAMPLE_JOBS))
+        self.assertEqual(first_skill_count, len(SKILL_NAMES))
+        self.assertEqual(JobPost.objects.count(), first_job_count)
+        self.assertEqual(Skill.objects.count(), first_skill_count)
+        self.assertFalse(
+            JobPost.objects.exclude(source=JobPost.Source.SAMPLE).exists()
+        )
+        self.assertTrue(
+            JobPost.objects.filter(description__startswith="[샘플 공고]").exists()
+        )
+
+    def test_clear_removes_only_sample_jobs(self):
+        call_command("seed_demo_data", stdout=io.StringIO())
+        manual_job = JobPost.objects.create(
+            company_name="직접 등록 회사",
+            title="직접 등록 공고",
+            description="관리자가 직접 등록한 공고",
+        )
+
+        call_command("seed_demo_data", clear=True, stdout=io.StringIO())
+
+        self.assertFalse(
+            JobPost.objects.filter(source=JobPost.Source.SAMPLE).exists()
+        )
+        self.assertTrue(JobPost.objects.filter(pk=manual_job.pk).exists())

@@ -113,7 +113,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 const rate = document.createElement('div');
                 rate.className = 'px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold flex items-center gap-1 z-10';
                 rate.textContent = `매칭률 ${Number(job.match_rate) || 0}%`;
-                header.append(initial, rate);
+                header.appendChild(initial);
+                if (job.source === 'sample') {
+                    const sample = document.createElement('span');
+                    sample.className = 'px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-bold';
+                    sample.textContent = '샘플 공고';
+                    header.appendChild(sample);
+                }
+                header.appendChild(rate);
 
                 const company = document.createElement('h3');
                 company.className = 'text-sm font-bold text-slate-400 mb-1';

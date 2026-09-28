@@ -120,7 +120,14 @@
                         const rate = document.createElement('span');
                         rate.className = 'bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded-md border border-blue-200';
                         rate.textContent = `매칭률 ${Number(job.match_rate) || 0}%`;
-                        meta.append(company, size, rate);
+                        meta.append(company, size);
+                        if (job.source === 'sample') {
+                            const sample = document.createElement('span');
+                            sample.className = 'bg-amber-50 text-amber-700 text-xs font-bold px-2 py-1 rounded-md border border-amber-200';
+                            sample.textContent = '샘플 공고';
+                            meta.appendChild(sample);
+                        }
+                        meta.appendChild(rate);
                         const title = document.createElement('h4');
                         title.className = 'text-sm font-bold text-slate-600 mb-3 line-clamp-1';
                         title.textContent = job.title || '';
