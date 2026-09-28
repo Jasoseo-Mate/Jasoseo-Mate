@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}AI 매칭 및 자소서 메이트 - 자소서 메이트{% endblock %}
+{% block title %}AI 자소서 생성 - 자소서 메이트{% endblock %}
 
 {% block content %}
 <div class="max-w-6xl mx-auto px-6 py-10">
@@ -69,7 +69,7 @@
             <!-- 3-2: 추천 기업 카드 섹션 -->
             <div>
                 <h3 class="text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-2">
-                    <span class="text-2xl">🏢</span> 스펙 맞춤 추천 IT 기업
+                    <span class="text-2xl">🏢</span> 스펙 맞춤 추천 기업
                 </h3>
                 <div id="recommended-companies-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- 기업 카드들이 동적으로 생성됩니다. -->
@@ -197,22 +197,6 @@
         let selectedCompany = "";
         let selectedRole = "";
 
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-        const csrftoken = getCookie('csrftoken');
-
         function showToast(text, isError = false) {
             const toast = document.getElementById('toast-message');
             const toastText = document.getElementById('toast-text');
@@ -247,7 +231,7 @@
             fetch("{% url 'jobs:ai_analyze_spec' %}", {
                 method: "POST",
                 headers: {
-                    "X-CSRFToken": csrftoken,
+                    "X-CSRFToken": window.getCsrfToken(),
                     "Content-Type": "application/json"
                 }
             })
@@ -267,39 +251,54 @@
                         const card = document.createElement('div');
                         card.className = "flex flex-col p-6 bg-white border border-slate-200 rounded-3xl shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-blue-300 transition-all duration-300";
                         
-                        let questionsHtml = "";
-                        company.recommended_questions.forEach((q, idx) => {
-                            questionsHtml += `
-                                <li class="group/item flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 cursor-pointer transition-all duration-200" onclick="window.openCoverLetterModal('${company.name}', '${company.role}', '${q.replace(/'/g, "\\'")}')">
-                                    <span class="w-6 h-6 flex items-center justify-center rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white text-xs font-bold shrink-0 transition-colors">${idx+1}</span>
-                                    <span class="text-sm font-medium text-slate-600 group-hover/item:text-blue-800 leading-tight transition-colors">${q}</span>
-                                </li>
-                            `;
-                        });
+                        const header = document.createElement('div');
+                        header.className = 'flex justify-between items-start mb-5';
+                        const companyInfo = document.createElement('div');
+                        const name = document.createElement('h4');
+                        name.className = 'text-xl font-extrabold text-slate-800';
+                        name.textContent = company.name;
+                        const role = document.createElement('span');
+                        role.className = 'inline-block mt-1 text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100';
+                        role.textContent = company.role;
+                        companyInfo.append(name, role);
 
-                        card.innerHTML = `
-                            <div class="flex justify-between items-start mb-5">
-                                <div>
-                                    <h4 class="text-xl font-extrabold text-slate-800">${company.name}</h4>
-                                    <span class="inline-block mt-1 text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">${company.role}</span>
-                                </div>
-                                <div class="flex flex-col items-end">
-                                    <span class="text-3xl font-black text-blue-600">${company.match_rate}%</span>
-                                    <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider">매칭률</span>
-                                </div>
-                            </div>
-                            <p class="text-sm text-slate-500 font-medium leading-relaxed mb-6 flex-grow border-b border-slate-100 pb-5">
-                                ${company.reason}
-                            </p>
-                            <div class="space-y-3">
-                                <span class="text-sm font-extrabold text-slate-700 block flex items-center gap-1">
-                                    ✍️ 추천 자소서 문항 (클릭 시 작성)
-                                </span>
-                                <ul class="space-y-2">
-                                    ${questionsHtml}
-                                </ul>
-                            </div>
-                        `;
+                        const rateBox = document.createElement('div');
+                        rateBox.className = 'flex flex-col items-end';
+                        const rate = document.createElement('span');
+                        rate.className = 'text-3xl font-black text-blue-600';
+                        rate.textContent = `${Number(company.match_rate) || 0}%`;
+                        const rateLabel = document.createElement('span');
+                        rateLabel.className = 'text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider';
+                        rateLabel.textContent = '매칭률';
+                        rateBox.append(rate, rateLabel);
+                        header.append(companyInfo, rateBox);
+
+                        const reason = document.createElement('p');
+                        reason.className = 'text-sm text-slate-500 font-medium leading-relaxed mb-6 flex-grow border-b border-slate-100 pb-5';
+                        reason.textContent = company.reason;
+
+                        const questionsBox = document.createElement('div');
+                        questionsBox.className = 'space-y-3';
+                        const questionsTitle = document.createElement('span');
+                        questionsTitle.className = 'text-sm font-extrabold text-slate-700 block';
+                        questionsTitle.textContent = '✍️ 추천 자소서 문항 (클릭 시 작성)';
+                        const questions = document.createElement('ul');
+                        questions.className = 'space-y-2';
+                        (company.recommended_questions || []).forEach((question, idx) => {
+                            const item = document.createElement('li');
+                            item.className = 'group/item flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-100 hover:border-blue-200 cursor-pointer transition-all duration-200';
+                            const number = document.createElement('span');
+                            number.className = 'w-6 h-6 flex items-center justify-center rounded-lg bg-blue-100 text-blue-600 text-xs font-bold shrink-0';
+                            number.textContent = idx + 1;
+                            const questionText = document.createElement('span');
+                            questionText.className = 'text-sm font-medium text-slate-600 leading-tight';
+                            questionText.textContent = question;
+                            item.append(number, questionText);
+                            item.addEventListener('click', () => openCoverLetterModal(company.name, company.role, question));
+                            questions.appendChild(item);
+                        });
+                        questionsBox.append(questionsTitle, questions);
+                        card.append(header, reason, questionsBox);
                         recommendedCompaniesGrid.appendChild(card);
                     });
                 }
@@ -350,7 +349,7 @@
             fetch("{% url 'jobs:ai_generate_coverletter' %}", {
                 method: "POST",
                 headers: {
-                    "X-CSRFToken": csrftoken,
+                    "X-CSRFToken": window.getCsrfToken(),
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ company_name: selectedCompany, role: selectedRole, question: question })
@@ -365,7 +364,7 @@
                     modalEditorArea.classList.remove('hidden');
                     btnSaveDraft.classList.remove('hidden');
                     
-                    modalContentEditor.innerHTML = res.data.coverletter_draft;
+                    modalContentEditor.textContent = res.data.coverletter_draft;
                     charCounter.textContent = `${modalContentEditor.innerText.length} 자`;
                     showToast("자소서 초안이 성공적으로 완성되었습니다!");
                 }
@@ -379,7 +378,7 @@
 
         btnSaveDraft.addEventListener('click', function() {
             const question = modalQuestionInput.value.trim();
-            const content = modalContentEditor.innerHTML.trim();
+            const content = modalContentEditor.innerText.trim();
 
             if (!content) {
                 showToast("저장할 자소서 내용이 없습니다.", true);
@@ -392,7 +391,7 @@
             fetch("{% url 'jobs:ai_save_coverletter' %}", {
                 method: "POST",
                 headers: {
-                    "X-CSRFToken": csrftoken,
+                    "X-CSRFToken": window.getCsrfToken(),
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
@@ -404,7 +403,7 @@
             })
             .then(res => res.json().then(data => ({ok: res.ok, data})))
             .then(res => {
-                if (!res.ok) throw new Error("자소서 저장에 실패했습니다.");
+                if (!res.ok) throw new Error(res.data.message || "자소서 저장에 실패했습니다.");
                 
                 btnSaveDraft.disabled = false;
                 btnSaveDraft.innerHTML = `💾 내 자소서에 저장`;

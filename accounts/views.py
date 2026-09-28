@@ -1,17 +1,23 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.conf import settings  # settings 임포트
-from django.contrib.auth.decorators import login_required
-from .models import Profile
-from jobs.models import Skill  # 프로필 내 스킬 관리에 필요
-from django.contrib.auth import authenticate, login, logout  # 인증 기능 임포트
-from django.contrib.auth.forms import AuthenticationForm  # 인증 폼 임포트
-from .forms import CustomUserCreationForm  # 사용자 정의 회원가입 폼 임포트
+import json
 
-from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+import requests
+from django.conf import settings  # settings 임포트
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.http import require_POST
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
+
+from jobs.models import Skill
+
 from .models import Profile, Education, Certificate, Activity, Project
 from .forms import (
+    CustomUserCreationForm,
     ProfileForm,
     EducationForm,
     CertificateForm,
@@ -27,6 +33,17 @@ def profile_dashboard(request):
     certificates = Certificate.objects.filter(user=request.user)
     activities = Activity.objects.filter(user=request.user)
     projects = Project.objects.filter(user=request.user)
+    completed_sections = sum(
+        [
+            bool(profile.bio),
+            profile.skills.exists(),
+            profile.preferred_company_size != "무관",
+            educations.exists(),
+            certificates.exists(),
+            activities.exists(),
+            projects.exists(),
+        ]
+    )
 
     if request.method == "POST":
         form = ProfileForm(request.POST, instance=profile)
@@ -43,6 +60,7 @@ def profile_dashboard(request):
         "certificates": certificates,
         "activities": activities,
         "projects": projects,
+        "completion_rate": round(completed_sections / 7 * 100),
         "all_skills": Skill.objects.all(),
     }
     return render(request, "accounts/profile_dashboard.html", context)
@@ -70,14 +88,21 @@ class EducationCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class EducationUpdateView(LoginRequiredMixin, UpdateView):
+class OwnedObjectMixin:
+    """Restrict object lookup to records owned by the signed-in user."""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
+
+class EducationUpdateView(LoginRequiredMixin, OwnedObjectMixin, UpdateView):
     model = Education
     form_class = EducationForm
     template_name = "accounts/education_form.html"
     success_url = reverse_lazy("accounts:profile_dashboard")
 
 
-class EducationDeleteView(LoginRequiredMixin, DeleteView):
+class EducationDeleteView(LoginRequiredMixin, OwnedObjectMixin, DeleteView):
     model = Education
     template_name = "accounts/education_confirm_delete.html"
     success_url = reverse_lazy("accounts:profile_dashboard")
@@ -105,14 +130,14 @@ class CertificateCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class CertificateUpdateView(LoginRequiredMixin, UpdateView):
+class CertificateUpdateView(LoginRequiredMixin, OwnedObjectMixin, UpdateView):
     model = Certificate
     form_class = CertificateForm
     template_name = "accounts/certificate_form.html"
     success_url = reverse_lazy("accounts:profile_dashboard")
 
 
-class CertificateDeleteView(LoginRequiredMixin, DeleteView):
+class CertificateDeleteView(LoginRequiredMixin, OwnedObjectMixin, DeleteView):
     model = Certificate
     template_name = "accounts/certificate_confirm_delete.html"
     success_url = reverse_lazy("accounts:profile_dashboard")
@@ -140,14 +165,14 @@ class ActivityCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ActivityUpdateView(LoginRequiredMixin, UpdateView):
+class ActivityUpdateView(LoginRequiredMixin, OwnedObjectMixin, UpdateView):
     model = Activity
     form_class = ActivityForm
     template_name = "accounts/activity_form.html"
     success_url = reverse_lazy("accounts:profile_dashboard")
 
 
-class ActivityDeleteView(LoginRequiredMixin, DeleteView):
+class ActivityDeleteView(LoginRequiredMixin, OwnedObjectMixin, DeleteView):
     model = Activity
     template_name = "accounts/activity_confirm_delete.html"
     success_url = reverse_lazy("accounts:profile_dashboard")
@@ -175,40 +200,39 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class ProjectUpdateView(LoginRequiredMixin, UpdateView):
+class ProjectUpdateView(LoginRequiredMixin, OwnedObjectMixin, UpdateView):
     model = Project
     form_class = ProjectForm
     template_name = "accounts/project_form.html"
     success_url = reverse_lazy("accounts:profile_dashboard")
 
 
-class ProjectDeleteView(LoginRequiredMixin, DeleteView):
+class ProjectDeleteView(LoginRequiredMixin, OwnedObjectMixin, DeleteView):
     model = Project
     template_name = "accounts/project_confirm_delete.html"
     success_url = reverse_lazy("accounts:profile_dashboard")
 
 
 def user_login(request):
+    next_url = request.POST.get("next") or request.GET.get("next")
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get("username")
-            password = form.cleaned_data.get("password")
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                # settings.LOGIN_REDIRECT_URL로 리디렉션
-                return redirect(
-                    settings.LOGIN_REDIRECT_URL
-                )  # settings.LOGIN_REDIRECT_URL로 리디렉션
-            else:
-                form.add_error(None, "잘못된 사용자 이름 또는 비밀번호입니다.")
+            login(request, form.get_user())
+            if next_url and url_has_allowed_host_and_scheme(
+                next_url,
+                allowed_hosts={request.get_host()},
+                require_https=request.is_secure(),
+            ):
+                return redirect(next_url)
+            return redirect(settings.LOGIN_REDIRECT_URL)
     else:
         form = AuthenticationForm()
-    return render(request, "accounts/login.html", {"form": form})
+    return render(request, "accounts/login.html", {"form": form, "next": next_url})
 
 
 @login_required
+@require_POST
 def user_logout(request):
     logout(request)
     # settings.LOGOUT_REDIRECT_URL로 리디렉션
@@ -224,16 +248,10 @@ def user_signup(request):
             user = form.save()
             user.backend = "django.contrib.auth.backends.ModelBackend"  # 백엔드 명시
             login(request, user)  # 회원가입 후 자동 로그인
+            return redirect(settings.LOGIN_REDIRECT_URL)
     else:
         form = CustomUserCreationForm()
     return render(request, "accounts/signup.html", {"form": form})
-
-
-import json
-import requests
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-import os
 
 
 @login_required
@@ -244,7 +262,7 @@ def ai_recommend_skills(request):
     DB에 존재하는 Skill 중 적합한 것을 추천합니다.
     """
     user = request.user
-    gmskey = os.environ.get("GMSKEY") or getattr(settings, "GMSKEY", None)
+    gmskey = settings.GMSKEY
 
     if not gmskey:
         return JsonResponse(
@@ -301,19 +319,12 @@ def ai_recommend_skills(request):
         "messages": [
             {
                 "role": "system",
-                "content": "You are a career consultant. Return only a JSON array of integers representing skill IDs.",
+                "content": 'You are a career consultant. Return a JSON object with a single key "ids" containing an array of integer skill IDs. Example: {"ids": [1, 2, 3]}',
             },
             {"role": "user", "content": prompt},
         ],
-        "response_format": {
-            "type": "json_object"
-        },  # Wait, to return array, we can wrap it in an object like {"ids": [1,2,3]}
+        "response_format": {"type": "json_object"},
     }
-
-    # 수정: json_object를 위해 포맷 변경
-    payload["messages"][0][
-        "content"
-    ] = 'You are a career consultant. Return a JSON object with a single key "ids" containing an array of integers representing skill IDs. Example: {"ids": [1, 2, 3]}'
 
     try:
         response = requests.post(url, json=payload, headers=headers, timeout=15)

@@ -29,6 +29,7 @@
                 <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'jobs:my_spec' %}">맞춤 채용공고</a>
                 <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'community:post_list' %}">커뮤니티</a>
                 <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'accounts:profile_dashboard' %}">내 스펙</a>
+                <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'resumes:coverletter_list' %}">내 자소서</a>
             </div>
         </div>
         
@@ -38,7 +39,10 @@
                     <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">{{ user.username|make_list|first|upper }}</div>
                     <span class="font-bold text-sm text-slate-700">{{ user.username }}님</span>
                 </a>
-                <a href="{% url 'accounts:logout' %}" class="text-sm font-bold text-slate-500 hover:text-red-500 transition-colors">로그아웃</a>
+                <form method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="text-sm font-bold text-slate-500 hover:text-red-500 transition-colors">로그아웃</button>
+                </form>
             {% else %}
                 <a href="{% url 'accounts:login' %}" class="text-slate-600 font-bold text-sm hover:text-blue-600 transition-colors">로그인</a>
                 <a href="{% url 'accounts:signup' %}" class="px-4 py-2 bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-sm active:scale-95">3초 만에 시작하기</a>
@@ -66,6 +70,15 @@
     </div>
 </footer>
 
+<script>
+    window.getCsrfToken = function() {
+        const token = document.cookie
+            .split(';')
+            .map(cookie => cookie.trim())
+            .find(cookie => cookie.startsWith('csrftoken='));
+        return token ? decodeURIComponent(token.slice('csrftoken='.length)) : '';
+    };
+</script>
 {% block extra_script %}{% endblock %}
 </body>
 </html>

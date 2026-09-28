@@ -22,10 +22,10 @@
             <div class="w-full md:w-64">
                 <div class="flex justify-between text-sm font-medium mb-1">
                     <span class="text-slate-600">프로필 완성도</span>
-                    <span class="text-blue-600">Great!</span>
+                    <span class="text-blue-600">{{ completion_rate }}%</span>
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-2.5">
-                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: 75%"></div>
+                    <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ completion_rate }}%"></div>
                 </div>
             </div>
         </div>
@@ -107,7 +107,7 @@
                                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 hidden group-hover:block"></div>
                                 <div>
                                     <p class="font-bold text-slate-800 text-lg">{{ edu.school_name }}</p>
-                                    <p class="text-sm text-slate-600 mt-1">{{ edu.major }} <span class="text-slate-400 mx-1\">|</span> {{ edu.degree }}</p>
+                                    <p class="text-sm text-slate-600 mt-1">{{ edu.major }} <span class="text-slate-400 mx-1">|</span> {{ edu.degree }}</p>
                                     <p class="text-xs text-slate-400 mt-1">{{ edu.start_date|date:"Y.m" }} ~ {{ edu.end_date|date:"Y.m"|default:"재학중" }}</p>
                                 </div>
                                 <div class="flex gap-2 opacity-50 group-hover:opacity-100 transition-opacity">
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await fetch("{% url 'accounts:ai_recommend_skills' %}", {
                     method: 'POST',
                     headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-CSRFToken': window.getCsrfToken(),
                         'Content-Type': 'application/json'
                     }
                 });

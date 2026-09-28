@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}소셜 로그인 확인 - 자소서 메이트{% endblock %}
+
+{% block content %}
+<main class="max-w-md mx-auto px-6 py-20">
+    <section class="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm text-center">
+        <div class="text-4xl mb-4">🔐</div>
+        {% if process == "connect" %}
+        <h1 class="text-2xl font-extrabold text-slate-800 mb-3">소셜 계정 연결</h1>
+        <p class="text-slate-500 mb-8">{{ provider.name }} 계정을 현재 계정에 연결하시겠습니까?</p>
+        {% else %}
+        <h1 class="text-2xl font-extrabold text-slate-800 mb-3">{{ provider.name }}로 계속하기</h1>
+        <p class="text-slate-500 mb-8">자소서 메이트에서 {{ provider.name }} 계정으로 로그인합니다.</p>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+            {% endif %}
+            <button type="submit" class="w-full py-3.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors">
+                계속하기
+            </button>
+        </form>
+        <a href="{% url 'accounts:login' %}" class="inline-block mt-5 text-sm font-bold text-slate-500 hover:text-slate-700">취소</a>
+    </section>
+</main>
+{% endblock %}

@@ -5,12 +5,13 @@
 {% block content %}
 <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
     <h1 class="text-2xl font-bold text-gray-800 mb-6">자기소개서 {% if coverletter %}수정{% else %}작성{% endif %}</h1>
+    {% if form.errors %}<div class="mb-4 rounded bg-red-50 p-3 text-sm text-red-700">입력값을 확인해 주세요. {{ form.errors }}</div>{% endif %}
     
     {% if job_post %}
         <p class="text-gray-600 mb-4">
             <strong>채용 공고:</strong> {{ job_post.title }} ({{ job_post.company_name }})
         </p>
-    {% elif coverletter %}
+    {% elif coverletter and coverletter.job_post %}
         <p class="text-gray-600 mb-4">
             <strong>채용 공고:</strong> {{ coverletter.job_post.title }} ({{ coverletter.job_post.company_name }})
         </p>
@@ -22,13 +23,13 @@
         {% csrf_token %}
         <div>
             <label for="title" class="block text-sm font-medium text-gray-700">자기소개서 제목</label>
-            <input type="text" id="title" name="title" value="{% if coverletter %}{{ coverletter.title }}{% else %}{{ default_title|default:'' }}{% endif %}" required
+            <input type="text" id="title" name="title" value="{{ form.title.value|default_if_none:'' }}" required
                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
         <div>
             <label for="content" class="block text-sm font-medium text-gray-700">자기소개서 내용</label>
             <textarea id="content" name="content" rows="15"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{% if coverletter %}{{ coverletter.content }}{% else %}{{ default_content|default:'' }}{% endif %}</textarea>
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ form.content.value|default_if_none:'' }}</textarea>
         </div>
         <div class="flex justify-between">
             <button type="submit"

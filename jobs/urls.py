@@ -27,5 +27,4 @@ urlpatterns = [
         views.ai_save_coverletter,
         name="ai_save_coverletter",
     ),
-    path("sync-worknet/", views.sync_worknet_jobs, name="sync_worknet_jobs"),
 ]

@@ -19,3 +19,10 @@ class JobPost(models.Model):
     required_skills = models.ManyToManyField(
         Skill, related_name="jobs"
     )  # 요구 기술 스택
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["company_name", "title"], name="unique_job_company_title"
+            )
+        ]

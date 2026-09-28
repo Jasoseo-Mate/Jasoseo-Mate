@@ -1,5 +1,5 @@
 """
-ASGI config for 커리어인사이트 project.
+ASGI config for the Jasoseo Mate project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "커리어인사이트.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "jasoseo_mate.settings")
 
 application = get_asgi_application()

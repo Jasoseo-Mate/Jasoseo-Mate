@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
+                    'X-CSRFToken': window.getCsrfToken()
                 },
                 body: JSON.stringify({ company_name: companyName })
             });
@@ -150,63 +150,107 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.status === 'success') {
                 const info = data.data;
 
-                // 1. Vision
-                resVision.innerHTML = info.vision ? info.vision.replace(/\n/g, '<br>') : "정보가 없습니다.";
+                const setMultilineText = (element, value, fallback = '정보가 없습니다.') => {
+                    element.replaceChildren();
+                    const lines = String(value || fallback).split('\n');
+                    lines.forEach((line, index) => {
+                        if (index) element.appendChild(document.createElement('br'));
+                        element.appendChild(document.createTextNode(line));
+                    });
+                };
+                const appendEmptyMessage = (element, message = '정보가 없습니다.') => {
+                    const empty = document.createElement('p');
+                    empty.className = 'text-slate-500 font-medium p-4';
+                    empty.textContent = message;
+                    element.appendChild(empty);
+                };
+                const safeHttpUrl = value => {
+                    try {
+                        const parsed = new URL(value);
+                        return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : null;
+                    } catch (_) {
+                        return null;
+                    }
+                };
 
-                // 2. Ideal Candidate
-                resIdeal.innerHTML = '';
-                if (info.ideal_candidate && info.ideal_candidate.length > 0) {
-                    info.ideal_candidate.forEach(ic => {
-                        resIdeal.innerHTML += `
-                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:bg-green-50 hover:border-green-200 transition-colors">
-                                <h3 class="font-extrabold text-slate-800 text-lg mb-2 flex items-center gap-2"><span class="text-green-500">✔️</span> ${ic.keyword}</h3>
-                                <p class="text-sm text-slate-600 font-medium leading-relaxed">${ic.desc}</p>
-                            </div>
-                        `;
+                setMultilineText(resVision, info.vision);
+
+                resIdeal.replaceChildren();
+                if (Array.isArray(info.ideal_candidate) && info.ideal_candidate.length) {
+                    info.ideal_candidate.forEach(candidate => {
+                        const card = document.createElement('div');
+                        card.className = 'bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:bg-green-50 hover:border-green-200 transition-colors';
+                        const heading = document.createElement('h3');
+                        heading.className = 'font-extrabold text-slate-800 text-lg mb-2 flex items-center gap-2';
+                        const icon = document.createElement('span');
+                        icon.className = 'text-green-500';
+                        icon.textContent = '✔️';
+                        heading.append(icon, document.createTextNode(` ${candidate.keyword || ''}`));
+                        const description = document.createElement('p');
+                        description.className = 'text-sm text-slate-600 font-medium leading-relaxed';
+                        description.textContent = candidate.desc || '';
+                        card.append(heading, description);
+                        resIdeal.appendChild(card);
                     });
                 } else {
-                    resIdeal.innerHTML = '<p class="text-slate-500 font-medium p-4">정보가 없습니다.</p>';
+                    appendEmptyMessage(resIdeal);
                 }
 
-                // 3. Recent Issues
-                resIssues.innerHTML = '';
-                if (info.recent_issues && info.recent_issues.length > 0) {
+                resIssues.replaceChildren();
+                if (Array.isArray(info.recent_issues) && info.recent_issues.length) {
                     info.recent_issues.forEach(issue => {
-                        resIssues.innerHTML += `
-                            <li class="flex gap-4 items-start bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:bg-orange-50 hover:border-orange-200 transition-colors">
-                                <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-orange-100 text-orange-600 rounded-full font-bold text-sm">
-                                    🗞️
-                                </span>
-                                <p class="text-slate-700 font-bold leading-relaxed pt-1">${issue}</p>
-                            </li>
-                        `;
+                        const item = document.createElement('li');
+                        item.className = 'flex gap-4 items-start bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:bg-orange-50 hover:border-orange-200 transition-colors';
+                        const icon = document.createElement('span');
+                        icon.className = 'flex-shrink-0 w-8 h-8 flex items-center justify-center bg-orange-100 text-orange-600 rounded-full font-bold text-sm';
+                        icon.textContent = '🗞️';
+                        const text = document.createElement('p');
+                        text.className = 'text-slate-700 font-bold leading-relaxed pt-1';
+                        text.textContent = issue;
+                        item.append(icon, text);
+                        resIssues.appendChild(item);
                     });
                 } else {
-                    resIssues.innerHTML = '<li class="text-slate-500 font-medium p-4">정보가 없습니다.</li>';
+                    appendEmptyMessage(resIssues);
                 }
 
-                // 4. Recommended Articles
-                resArticles.innerHTML = '';
-                if (info.recommended_articles && info.recommended_articles.length > 0) {
-                    info.recommended_articles.forEach(art => {
-                        resArticles.innerHTML += `
-                            <a href="${art.url}" target="_blank" rel="noopener noreferrer" class="block bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:bg-rose-50 hover:border-rose-200 transition-colors group cursor-pointer">
-                                <div class="flex justify-between items-start mb-3">
-                                    <h3 class="font-extrabold text-slate-800 text-lg group-hover:text-rose-700 leading-snug transition-colors line-clamp-2">${art.title}</h3>
-                                    <span class="material-symbols-outlined text-slate-400 group-hover:text-rose-500 shrink-0">open_in_new</span>
-                                </div>
-                                <div class="bg-white p-3 rounded-xl border border-slate-200 group-hover:border-rose-100">
-                                    <p class="text-sm text-slate-600 font-medium"><span class="font-bold text-rose-500">💡 추천 사유:</span> ${art.reason}</p>
-                                </div>
-                            </a>
-                        `;
+                resArticles.replaceChildren();
+                if (Array.isArray(info.recommended_articles) && info.recommended_articles.length) {
+                    info.recommended_articles.forEach(article => {
+                        const safeUrl = safeHttpUrl(article.url);
+                        const card = document.createElement(safeUrl ? 'a' : 'div');
+                        card.className = 'block bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:bg-rose-50 hover:border-rose-200 transition-colors group';
+                        if (safeUrl) {
+                            card.href = safeUrl;
+                            card.target = '_blank';
+                            card.rel = 'noopener noreferrer';
+                        }
+                        const header = document.createElement('div');
+                        header.className = 'flex justify-between items-start mb-3';
+                        const title = document.createElement('h3');
+                        title.className = 'font-extrabold text-slate-800 text-lg group-hover:text-rose-700 leading-snug transition-colors line-clamp-2';
+                        title.textContent = article.title || '제목 없음';
+                        const icon = document.createElement('span');
+                        icon.className = 'material-symbols-outlined text-slate-400 group-hover:text-rose-500 shrink-0';
+                        icon.textContent = safeUrl ? 'open_in_new' : 'link_off';
+                        header.append(title, icon);
+                        const reasonBox = document.createElement('div');
+                        reasonBox.className = 'bg-white p-3 rounded-xl border border-slate-200 group-hover:border-rose-100';
+                        const reason = document.createElement('p');
+                        reason.className = 'text-sm text-slate-600 font-medium';
+                        const label = document.createElement('span');
+                        label.className = 'font-bold text-rose-500';
+                        label.textContent = '💡 추천 사유: ';
+                        reason.append(label, document.createTextNode(article.reason || '정보 없음'));
+                        reasonBox.appendChild(reason);
+                        card.append(header, reasonBox);
+                        resArticles.appendChild(card);
                     });
                 } else {
-                    resArticles.innerHTML = '<p class="text-slate-500 font-medium p-4">추천 기사 정보가 없습니다.</p>';
+                    appendEmptyMessage(resArticles, '추천 기사 정보가 없습니다.');
                 }
 
-                // 5. Interview Tip
-                resTip.innerHTML = info.interview_tip ? info.interview_tip.replace(/\n/g, '<br>') : "정보가 없습니다.";
+                setMultilineText(resTip, info.interview_tip);
 
                 loadingSpinner.classList.add('hidden');
                 resultContainer.classList.remove('hidden');

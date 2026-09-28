@@ -10,29 +10,6 @@
             <h1 class="text-3xl font-extrabold text-slate-800 mb-2">마이 대시보드</h1>
             <p class="text-slate-500 font-medium">나에게 딱 맞는 채용 공고를 찾고 자소서를 작성해보세요.</p>
         </div>
-        <div class="flex items-center gap-3">
-            <button id="sync-worknet-btn" class="bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 px-5 py-2.5 rounded-xl transition-all font-bold text-sm shadow-sm flex items-center gap-2 active:scale-95">
-                <span class="material-symbols-outlined text-lg text-slate-400">sync</span>
-                고용24 채용정보 동기화
-            </button>
-        </div>
-    </div>
-
-    <!-- 동기화 에러 경고 배너 -->
-    <div id="sync-error-banner" class="hidden mb-8 bg-red-50 border border-red-200 text-red-800 p-5 rounded-2xl flex items-start gap-3">
-        <span class="material-symbols-outlined text-red-500 text-2xl mt-0.5">error</span>
-        <div>
-            <span class="font-bold text-base block mb-1">동기화 실패</span>
-            <span id="sync-error-msg" class="text-sm font-medium text-red-700">워크넷 API를 호출하는 중 오류가 발생했습니다.</span>
-        </div>
-    </div>
-
-    <!-- 동기화 로딩 배너 -->
-    <div id="sync-loading-banner" class="hidden mb-8 bg-blue-50 border border-blue-200 text-blue-800 p-5 rounded-2xl flex items-center gap-4">
-        <div class="w-6 h-6 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-        <div class="text-sm font-bold text-blue-700">
-            고용24 OpenAPI로부터 최신 구인 구직 데이터를 가져오고 있습니다. 잠시만 기다려 주세요...
-        </div>
     </div>
 
     <div class="grid md:grid-cols-3 gap-6 mb-8">
@@ -89,76 +66,23 @@
     </div>
 </div>
 
-<!-- 토스트 알림창 -->
-<div id="toast-message" class="fixed bottom-8 right-8 z-50 hidden bg-slate-800 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-300 transform translate-y-10 opacity-0">
-    <span class="material-symbols-outlined text-green-400 text-2xl">check_circle</span>
-    <span id="toast-text" class="text-sm font-bold">저장되었습니다!</span>
-</div>
 {% endblock %}
 
 {% block extra_script %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const syncBtn = document.getElementById('sync-worknet-btn');
-        const errorBanner = document.getElementById('sync-error-banner');
-        const errorMsg = document.getElementById('sync-error-msg');
-        const loadingBanner = document.getElementById('sync-loading-banner');
-
-        const toast = document.getElementById('toast-message');
-        const toastText = document.getElementById('toast-text');
-
-        function showToast(text, isError = false) {
-            toastText.textContent = text;
-            const icon = toast.querySelector('.material-symbols-outlined');
-            if (isError) {
-                icon.textContent = "error";
-                icon.className = "material-symbols-outlined text-red-400 text-2xl";
-            } else {
-                icon.textContent = "check_circle";
-                icon.className = "material-symbols-outlined text-green-400 text-2xl";
-            }
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.remove('translate-y-10', 'opacity-0');
-                toast.classList.add('translate-y-0', 'opacity-100');
-            }, 50);
-            setTimeout(() => {
-                toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-10', 'opacity-0');
-                setTimeout(() => toast.classList.add('hidden'), 300);
-            }, 3500);
-        }
-
-        // 워크넷 동기화 버튼 핸들러
-        syncBtn.addEventListener('click', function() {
-            syncBtn.disabled = true;
-            errorBanner.classList.add('hidden');
-            loadingBanner.classList.remove('hidden');
-
-            fetch("{% url 'jobs:sync_worknet_jobs' %}")
-                .then(res => {
-                    return res.json().then(data => {
-                        if (!res.ok) throw new Error(data.message || "동기화 실패");
-                        return data;
-                    });
-                })
-                .then(data => {
-                    loadingBanner.classList.add('hidden');
-                    syncBtn.disabled = false;
-                    showToast(data.message || "동기화 완료!");
-                })
-                .catch(err => {
-                    loadingBanner.classList.add('hidden');
-                    syncBtn.disabled = false;
-                    errorMsg.textContent = err.message;
-                    errorBanner.classList.remove('hidden');
-                    showToast("동기화 오류가 발생했습니다.", true);
-                });
-        });
-
         // 추천 공고 로드 및 매칭
         const loadBtn = document.getElementById('load-jobs-btn');
         const container = document.getElementById('job-list-container');
+        const showJobMessage = (message, wrapperClass, textClass) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = `text-center py-12 rounded-2xl border ${wrapperClass}`;
+            const text = document.createElement('p');
+            text.className = `font-bold ${textClass}`;
+            text.textContent = message;
+            wrapper.appendChild(text);
+            container.replaceChildren(wrapper);
+        };
 
         loadBtn.addEventListener('click', function() {
             container.innerHTML = `
@@ -170,43 +94,58 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === 'info') {
-                        container.innerHTML = `<div class="text-center py-12 bg-orange-50 rounded-2xl border border-orange-100"><p class="text-orange-600 font-bold">${data.message}</p></div>`;
+                        showJobMessage(data.message, 'bg-orange-50 border-orange-100', 'text-orange-600');
                         return;
                     }
                     
                     const jobs = data.jobs || data;
                     if (!jobs || jobs.length === 0) {
-                        container.innerHTML = `<div class="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200"><p class="text-slate-500 font-bold">조건에 부합하는 공고가 없습니다.</p></div>`;
+                        showJobMessage('조건에 부합하는 공고가 없습니다.', 'bg-slate-50 border-slate-200', 'text-slate-500');
                         return;
                     }
 
-                    let html = "";
+                    container.replaceChildren();
                     jobs.forEach(job => {
-                        html += `
-                            <div class="group border border-slate-200 hover:border-blue-400 p-5 rounded-2xl transition-all shadow-sm bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                                <div>
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <span class="font-extrabold text-slate-800 text-lg">${job.company_name}</span>
-                                        <span class="bg-indigo-50 text-indigo-600 text-xs font-bold px-2 py-1 rounded-md border border-indigo-100">${job.company_size || '무관'}</span>
-                                        <span class="bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded-md border border-blue-200">매칭률 ${job.match_rate}%</span>
-                                    </div>
-                                    <h4 class="text-sm font-bold text-slate-600 mb-3 line-clamp-1">${job.title}</h4>
-                                    <div class="flex gap-1.5 flex-wrap">
-                                        ${job.skills.map(s => `<span class="bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[11px] font-bold">${s}</span>`).join('')}
-                                    </div>
-                                </div>
-                                <div class="shrink-0 flex justify-end">
-                                    <a href="/resumes/coverletters/create/${job.id}/" class="text-sm font-bold bg-white text-blue-600 px-4 py-2 rounded-xl border border-blue-200 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm active:scale-95 whitespace-nowrap">
-                                        자소서 쓰기 →
-                                    </a>
-                                </div>
-                            </div>
-                        `;
+                        const card = document.createElement('div');
+                        card.className = 'group border border-slate-200 hover:border-blue-400 p-5 rounded-2xl transition-all shadow-sm bg-white flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4';
+                        const details = document.createElement('div');
+                        const meta = document.createElement('div');
+                        meta.className = 'flex items-center gap-2 mb-2';
+                        const company = document.createElement('span');
+                        company.className = 'font-extrabold text-slate-800 text-lg';
+                        company.textContent = job.company_name || '';
+                        const size = document.createElement('span');
+                        size.className = 'bg-indigo-50 text-indigo-600 text-xs font-bold px-2 py-1 rounded-md border border-indigo-100';
+                        size.textContent = job.company_size || '무관';
+                        const rate = document.createElement('span');
+                        rate.className = 'bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded-md border border-blue-200';
+                        rate.textContent = `매칭률 ${Number(job.match_rate) || 0}%`;
+                        meta.append(company, size, rate);
+                        const title = document.createElement('h4');
+                        title.className = 'text-sm font-bold text-slate-600 mb-3 line-clamp-1';
+                        title.textContent = job.title || '';
+                        const skills = document.createElement('div');
+                        skills.className = 'flex gap-1.5 flex-wrap';
+                        (job.skills || []).forEach(skill => {
+                            const badge = document.createElement('span');
+                            badge.className = 'bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg text-[11px] font-bold';
+                            badge.textContent = skill;
+                            skills.appendChild(badge);
+                        });
+                        details.append(meta, title, skills);
+                        const action = document.createElement('div');
+                        action.className = 'shrink-0 flex justify-end';
+                        const link = document.createElement('a');
+                        link.className = 'text-sm font-bold bg-white text-blue-600 px-4 py-2 rounded-xl border border-blue-200 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm active:scale-95 whitespace-nowrap';
+                        link.href = `/resumes/coverletters/create/${encodeURIComponent(job.id)}/`;
+                        link.textContent = '자소서 쓰기 →';
+                        action.appendChild(link);
+                        card.append(details, action);
+                        container.appendChild(card);
                     });
-                    container.innerHTML = html;
                 })
                 .catch(err => {
-                    container.innerHTML = `<div class="text-center py-12 bg-red-50 rounded-2xl border border-red-100"><p class="text-red-500 font-bold">정보를 불러오는 도중 오류가 발생했습니다.</p></div>`;
+                    showJobMessage('정보를 불러오는 도중 오류가 발생했습니다.', 'bg-red-50 border-red-100', 'text-red-500');
                 });
         });
     });

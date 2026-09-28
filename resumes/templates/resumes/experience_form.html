@@ -5,32 +5,31 @@
 {% block content %}
 <div class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
     <h1 class="text-2xl font-bold text-gray-800 mb-6">경험 {% if experience %}수정{% else %}추가{% endif %}</h1>
+    {% if form.errors %}<div class="mb-4 rounded bg-red-50 p-3 text-sm text-red-700">입력값을 확인해 주세요. {{ form.errors }}</div>{% endif %}
     <form method="post" {% if experience %}action="{% url 'resumes:experience_update' experience.pk %}"{% else %}action="{% url 'resumes:experience_create' %}"{% endif %} class="space-y-4">
         {% csrf_token %}
         <div>
             <label for="title" class="block text-sm font-medium text-gray-700">제목 (예: 백엔드 개발자, 데이터 분석가)</label>
-            <input type="text" id="title" name="title" value="{{ experience.title|default_if_none:'' }}" required
+            <input type="text" id="title" name="title" value="{{ form.title.value|default_if_none:'' }}" required
                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
         <div>
             <label for="company" class="block text-sm font-medium text-gray-700">회사명</label>
-            <input type="text" id="company" name="company" value="{{ experience.company|default_if_none:'' }}" required
+            <input type="text" id="company" name="company" value="{{ form.company.value|default_if_none:'' }}" required
                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
         </div>
         <div>
             <label for="start_date" class="block text-sm font-medium text-gray-700">시작일</label>
-            <input type="date" id="start_date" name="start_date" value="{{ experience.start_date|date:'Y-m-d'|default_if_none:'' }}" required
-                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            {{ form.start_date }}
         </div>
         <div>
             <label for="end_date" class="block text-sm font-medium text-gray-700">종료일 (현재 재직 중이라면 비워두세요)</label>
-            <input type="date" id="end_date" name="end_date" value="{{ experience.end_date|date:'Y-m-d'|default_if_none:'' }}"
-                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+            {{ form.end_date }}
         </div>
         <div>
             <label for="description" class="block text-sm font-medium text-gray-700">상세 내용 (담당 업무, 성과 등)</label>
             <textarea id="description" name="description" rows="5"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ experience.description|default_if_none:'' }}</textarea>
+                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ form.description.value|default_if_none:'' }}</textarea>
         </div>
         <div class="flex justify-between">
             <button type="submit"

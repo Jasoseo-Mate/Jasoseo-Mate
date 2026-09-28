@@ -36,7 +36,7 @@
                 </div>
                 <div class="flex items-center gap-4 text-sm font-medium text-slate-500">
                     <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">visibility</span> {{ post.views }}</span>
-                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">chat_bubble</span> {{ post.comments.count }}</span>
+                    <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">chat_bubble</span> {{ post.comment_count }}</span>
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
     <!-- 댓글 영역 -->
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
         <h3 class="text-xl font-extrabold text-slate-800 mb-6 flex items-center gap-2">
-            댓글 <span class="text-blue-600">{{ post.comments.count }}</span>
+            댓글 <span class="text-blue-600">{{ post.comment_count }}</span>
         </h3>
 
         <!-- 댓글 작성 폼 -->

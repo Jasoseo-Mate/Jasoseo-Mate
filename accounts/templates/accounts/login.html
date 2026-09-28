@@ -14,6 +14,7 @@
 
         <form method="post" action="{% url 'accounts:login' %}" class="space-y-4">
             {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
             {% for field in form %}
                 <div class="flex flex-col gap-1">
                     <label for="{{ field.id_for_label }}" class="text-sm font-bold text-slate-700 hidden">{{ field.label }}</label>
@@ -32,25 +33,24 @@
             </button>
         </form>
 
+        {% get_providers as socialaccount_providers %}
+        {% if socialaccount_providers %}
         <div class="mt-8 relative flex items-center justify-center">
             <div class="border-t border-slate-200 absolute w-full"></div>
             <span class="bg-white px-4 text-xs font-bold text-slate-400 relative z-10">간편 로그인</span>
         </div>
 
         <div class="mt-6 space-y-3">
-            <a href="{% provider_login_url 'google' %}" class="w-full flex justify-center py-3 px-4 border border-slate-200 rounded-xl shadow-sm bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all">
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5 mr-2" alt="Google">
-                Google 계정으로 계속하기
-            </a>
-            <a href="{% provider_login_url 'kakao' %}" class="w-full flex justify-center py-3 px-4 rounded-xl shadow-sm text-sm font-bold text-[#391B1B] bg-[#FEE500] hover:bg-[#FDD800] transition-all">
-                <img src="https://www.svgrepo.com/show/303176/kakaotalk-logo.svg" class="w-5 h-5 mr-2" alt="Kakao">
-                카카오 계정으로 계속하기
-            </a>
-            <a href="{% provider_login_url 'naver' %}" class="w-full flex justify-center py-3 px-4 rounded-xl shadow-sm text-sm font-bold text-white bg-[#03C75A] hover:bg-[#02b350] transition-all">
-                <div class="w-5 h-5 mr-2 bg-white text-[#03C75A] font-black rounded-sm flex items-center justify-center text-[12px] leading-none">N</div>
-                네이버 계정으로 게속하기
-            </a>
+            {% for provider in socialaccount_providers %}
+            <form method="post" action="{% provider_login_url provider.id process='login' %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-slate-200 rounded-xl shadow-sm bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all">
+                {{ provider.name }} 계정으로 계속하기
+                </button>
+            </form>
+            {% endfor %}
         </div>
+        {% endif %}
 
         <p class="mt-8 text-center text-sm font-medium text-slate-500">
             아직 회원이 아니신가요? <a href="{% url 'accounts:signup' %}" class="text-blue-600 font-bold hover:underline">회원가입</a>

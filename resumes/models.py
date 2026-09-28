@@ -35,12 +35,19 @@ class CoverLetter(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="cover_letters"
     )
     job_post = models.ForeignKey(
-        JobPost, on_delete=models.CASCADE, related_name="cover_letters"
+        JobPost,
+        on_delete=models.SET_NULL,
+        related_name="cover_letters",
+        null=True,
+        blank=True,
     )
+    target_company = models.CharField(max_length=100, blank=True)
+    target_role = models.CharField(max_length=200, blank=True)
     title = models.CharField(max_length=200)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user.username}'s Cover Letter for {self.job_post.title}"
+        target = self.target_role or (self.job_post.title if self.job_post else "지원 대상 미지정")
+        return f"{self.user.username}'s Cover Letter for {target}"
