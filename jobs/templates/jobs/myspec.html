@@ -1,76 +1,72 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}나에게 딱 맞는 공고 추천 - 자소서 메이트{% endblock %}
-
 {% block content %}
-<div class="max-w-6xl mx-auto px-6 py-12">
+  <div class="max-w-6xl mx-auto px-6 py-12">
     <!-- Header Section -->
     <div class="text-center mb-16 relative">
-        <div class="absolute inset-0 flex items-center justify-center -z-10 opacity-30">
-            <div class="w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse"></div>
-            <div class="w-64 h-64 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse" style="animation-delay: 1000ms;"></div>
-        </div>
-        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-4">
-            <span class="text-base">🎯</span> 나만의 AI 헤드헌터
-        </span>
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-5 leading-tight text-slate-800">
-            나에게 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">딱 맞는 기업</span>을 찾아드려요
-        </h1>
-        <p class="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-            입력하신 스펙과 역량을 분석해서, 합격 확률이 높은 알짜 채용 공고만 쏙쏙 골라 보여드릴게요.
-        </p>
+      <div class="absolute inset-0 flex items-center justify-center -z-10 opacity-30">
+        <div class="w-64 h-64 bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse"></div>
+        <div class="w-64 h-64 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-pulse"
+             style="animation-delay: 1000ms"></div>
+      </div>
+      <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-bold mb-4">
+        <span class="text-base">🎯</span> 나만의 AI 헤드헌터
+      </span>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-5 leading-tight text-slate-800">
+        나에게 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">딱 맞는 기업</span>을 찾아드려요
+      </h1>
+      <p class="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
+        입력하신 스펙과 역량을 분석해서, 합격 확률이 높은 알짜 채용 공고만 쏙쏙 골라 보여드릴게요.
+      </p>
     </div>
-
     <!-- UI States -->
     <div class="bg-white rounded-3xl shadow-lg border border-slate-100 p-8 md:p-12 min-h-[500px] flex flex-col">
-        
-        <!-- State 1: Initial/Loading -->
-        <div id="loading-state" class="flex-1 flex flex-col items-center justify-center text-center py-20">
-            <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner animate-pulse">
-                🔍
-            </div>
-            <h3 class="text-2xl font-extrabold text-slate-800 mb-3">내 스펙과 딱 맞는 기업을 찾는 중이에요...</h3>
-            <p class="text-slate-500 font-medium">
-                작성해주신 프로필을 꼼꼼히 살펴보고 있어요.<br>잠시만 기다려주세요!
-            </p>
-            <div class="mt-8 flex gap-2">
-                <span class="w-3 h-3 bg-blue-600 rounded-full animate-bounce"></span>
-                <span class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
-                <span class="w-3 h-3 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
-            </div>
+      <!-- State 1: Initial/Loading -->
+      <div id="loading-state"
+           class="flex-1 flex flex-col items-center justify-center text-center py-20">
+        <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center text-4xl mb-6 shadow-inner animate-pulse">
+          🔍
         </div>
-
-        <!-- State 2: Error/Empty -->
-        <div id="error-state" class="hidden flex-1 flex-col items-center justify-center text-center py-20">
-            <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center text-4xl mb-6">
-                😢
-            </div>
-            <h3 id="error-title" class="text-2xl font-extrabold text-slate-800 mb-3">스펙 정보가 부족해요</h3>
-            <p id="error-message" class="text-slate-500 font-medium mb-8">
-                정확한 추천을 위해 먼저 내 스펙 보드를 채워주세요.
-            </p>
-            <a href="{% url 'accounts:profile_dashboard' %}" class="px-8 py-4 bg-slate-800 text-white font-bold rounded-2xl shadow-md hover:bg-slate-900 transition-all">
-                내 스펙 채우러 가기
-            </a>
+        <h3 class="text-2xl font-extrabold text-slate-800 mb-3">내 스펙과 딱 맞는 기업을 찾는 중이에요...</h3>
+        <p class="text-slate-500 font-medium">
+          작성해주신 프로필을 꼼꼼히 살펴보고 있어요.
+          <br>
+          잠시만 기다려주세요!
+        </p>
+        <div class="mt-8 flex gap-2">
+          <span class="w-3 h-3 bg-blue-600 rounded-full animate-bounce"></span>
+          <span class="w-3 h-3 bg-blue-600 rounded-full animate-bounce"
+                style="animation-delay: 0.1s"></span>
+          <span class="w-3 h-3 bg-blue-600 rounded-full animate-bounce"
+                style="animation-delay: 0.2s"></span>
         </div>
-
-        <!-- State 3: Results -->
-        <div id="result-state" class="hidden flex-1">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
-                <div>
-                    <h2 class="text-2xl font-extrabold text-slate-800 mb-1">AI 추천 매칭 결과 🎉</h2>
-                    <p class="text-slate-500 text-sm font-medium">현재 채용 중인 공고 중에서 가장 잘 맞는 곳을 골랐어요.</p>
-                </div>
-            </div>
-            
-            <div id="jobs-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Job cards will be injected here -->
-            </div>
+      </div>
+      <!-- State 2: Error/Empty -->
+      <div id="error-state"
+           class="hidden flex-1 flex-col items-center justify-center text-center py-20">
+        <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center text-4xl mb-6">😢</div>
+        <h3 id="error-title" class="text-2xl font-extrabold text-slate-800 mb-3">스펙 정보가 부족해요</h3>
+        <p id="error-message" class="text-slate-500 font-medium mb-8">정확한 추천을 위해 먼저 내 스펙 보드를 채워주세요.</p>
+        <a href="{% url 'accounts:profile_dashboard' %}"
+           class="px-8 py-4 bg-slate-800 text-white font-bold rounded-2xl shadow-md hover:bg-slate-900 transition-all">
+          내 스펙 채우러 가기
+        </a>
+      </div>
+      <!-- State 3: Results -->
+      <div id="result-state" class="hidden flex-1">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+          <div>
+            <h2 class="text-2xl font-extrabold text-slate-800 mb-1">AI 추천 매칭 결과 🎉</h2>
+            <p class="text-slate-500 text-sm font-medium">현재 채용 중인 공고 중에서 가장 잘 맞는 곳을 골랐어요.</p>
+          </div>
         </div>
+        <div id="jobs-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Job cards will be injected here -->
+        </div>
+      </div>
     </div>
-</div>
-
-<script>
+  </div>
+  <script>
 document.addEventListener('DOMContentLoaded', () => {
     const loadingState = document.getElementById('loading-state');
     const errorState = document.getElementById('error-state');
@@ -148,5 +144,5 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error fetching recommended jobs:', error);
         });
 });
-</script>
+  </script>
 {% endblock %}

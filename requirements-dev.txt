@@ -1,0 +1,4 @@
+-r requirements.txt
+black==26.5.1
+ruff==0.16.8
+djlint==1.46.2

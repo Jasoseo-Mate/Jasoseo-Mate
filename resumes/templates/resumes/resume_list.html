@@ -1,32 +1,32 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}이력서 목록 - 자소서 메이트{% endblock %}
-
 {% block content %}
-<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">내 이력서 목록</h1>
-    <a href="{% url 'resumes:resume_create' %}" class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mb-4 inline-block">
-        새 이력서 추가
+  <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
+    <h1 class="text-2xl font-bold text-slate-800 mb-6">내 이력서 목록</h1>
+    <a href="{% url 'resumes:resume_create' %}"
+       class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mb-4 inline-block">
+      새 이력서 추가
     </a>
-    
     {% if resumes %}
-    <div class="space-y-4">
+      <div class="space-y-4">
         {% for resume in resumes %}
-        <div class="border border-gray-200 p-4 rounded-md shadow-sm flex justify-between items-center">
+          <div class="border border-slate-200 p-4 rounded-md shadow-sm flex justify-between items-center">
             <div>
-                <h2 class="text-xl font-semibold">{{ resume.title }}</h2>
-                <p class="text-gray-600">{{ resume.updated_at|date:"Y년 m월 d일 H시 i분" }} 최종 수정</p>
-                <p class="text-gray-700 text-sm mt-2">{{ resume.content|truncatechars:100 }}</p>
+              <h2 class="text-xl font-semibold">{{ resume.title }}</h2>
+              <p class="text-slate-600">{{ resume.updated_at|date:"Y년 m월 d일 H시 i분" }} 최종 수정</p>
+              <p class="text-slate-700 text-sm mt-2">{{ resume.content|truncatechars:100 }}</p>
             </div>
             <div class="flex space-x-2">
-                <a href="{% url 'resumes:resume_update' resume.pk %}" class="text-blue-500 hover:text-blue-700">수정</a>
-                <a href="{% url 'resumes:resume_delete' resume.pk %}" class="text-red-500 hover:text-red-700">삭제</a>
+              <a href="{% url 'resumes:resume_update' resume.pk %}"
+                 class="text-blue-500 hover:text-blue-700">수정</a>
+              <a href="{% url 'resumes:resume_delete' resume.pk %}"
+                 class="text-red-500 hover:text-red-700">삭제</a>
             </div>
-        </div>
+          </div>
         {% endfor %}
-    </div>
+      </div>
     {% else %}
-    <p class="text-gray-600">등록된 이력서가 없습니다. 새로운 이력서를 추가해보세요!</p>
+      <p class="text-slate-600">등록된 이력서가 없습니다. 새로운 이력서를 추가해보세요!</p>
     {% endif %}
-</div>
+  </div>
 {% endblock %}

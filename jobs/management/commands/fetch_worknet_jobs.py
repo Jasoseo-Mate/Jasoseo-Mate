@@ -1,3 +1,4 @@
+import re
 import xml.etree.ElementTree as ET
 
 import requests
@@ -6,10 +7,7 @@ from django.core.management.base import BaseCommand, CommandError
 
 from jobs.models import JobPost, Skill
 
-
-WORK24_JOB_API_URL = (
-    "https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo210L01.do"
-)
+WORK24_JOB_API_URL = "https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo210L01.do"
 WORK24_JOB_DETAIL_API_URL = (
     "https://www.work24.go.kr/cm/openApi/call/wk/callOpenApiSvcInfo210D01.do"
 )
@@ -36,15 +34,24 @@ def normalize_company_size(value):
     return "무관"
 
 
+def skill_matches(text, skill_name):
+    for keyword in skill_name.split("/"):
+        keyword = keyword.strip()
+        if not keyword:
+            continue
+        pattern = rf"(?<![0-9A-Za-z가-힣]){re.escape(keyword)}(?![0-9A-Za-z가-힣])"
+        if re.search(pattern, text, flags=re.IGNORECASE):
+            return True
+    return False
+
+
 class Command(BaseCommand):
     help = "고용24 OpenAPI 채용 공고를 데이터베이스에 동기화합니다."
 
     def handle(self, *args, **options):
         api_key = settings.WORKNET_API_KEY
         if not api_key:
-            raise CommandError(
-                "오류: .env 파일에 WORKNET_API_KEY가 등록되어 있지 않습니다."
-            )
+            raise CommandError("오류: .env 파일에 WORKNET_API_KEY가 등록되어 있지 않습니다.")
 
         self.stdout.write("고용24 OpenAPI에서 채용 정보를 가져오는 중...")
         params = {
@@ -125,10 +132,9 @@ class Command(BaseCommand):
                     updated_count += 1
 
                 job.required_skills.clear()
-                target_text = f"{title} {career} {industry}".lower()
+                target_text = f"{title} {career} {industry}"
                 for skill in skills:
-                    keywords = (keyword.strip().lower() for keyword in skill.name.split("/"))
-                    if any(keyword and keyword in target_text for keyword in keywords):
+                    if skill_matches(target_text, skill.name):
                         job.required_skills.add(skill)
 
             self.stdout.write(
@@ -152,9 +158,7 @@ class Command(BaseCommand):
             "infoSvc": "VALIDATION",
         }
         try:
-            response = requests.get(
-                WORK24_JOB_DETAIL_API_URL, params=params, timeout=10
-            )
+            response = requests.get(WORK24_JOB_DETAIL_API_URL, params=params, timeout=10)
             response.raise_for_status()
             root = ET.fromstring(response.text)
             self._raise_for_api_error(root)

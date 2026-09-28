@@ -1,71 +1,67 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load socialaccount %}
-
 {% block title %}회원가입 - 자소서 메이트{% endblock %}
-
 {% block content %}
-<div class="flex flex-col justify-center items-center py-12 px-4">
+  <div class="flex flex-col justify-center items-center py-12 px-4">
     <div class="w-full max-w-md bg-white p-8 rounded-3xl shadow-sm border border-slate-200">
-        <div class="text-center mb-8">
-            <div class="text-4xl mb-3">🚀</div>
-            <h1 class="text-2xl font-extrabold text-slate-800">환영합니다!</h1>
-            <p class="text-slate-500 mt-1 text-sm font-medium">합격 확률을 높이는 AI 취업 비서를 만나보세요.</p>
-        </div>
-
-        <form method="post" class="space-y-4">
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="flex flex-col gap-1">
-                    <label for="{{ field.id_for_label }}" class="text-sm font-bold text-slate-700">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <p class="text-xs text-slate-500 font-medium">{{ field.help_text|safe }}</p>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <p class="text-xs text-red-500 font-bold">{{ error }}</p>
-                    {% endfor %}
-                </div>
-            {% endfor %}
-            
-            {% if form.non_field_errors %}
-                <div class="p-3 mb-4 text-sm font-bold text-red-500 bg-red-50 rounded-xl">
-                    {% for error in form.non_field_errors %}
-                        {{ error }}
-                    {% endfor %}
-                </div>
+      <div class="text-center mb-8">
+        <div class="text-4xl mb-3">🚀</div>
+        <h1 class="text-2xl font-extrabold text-slate-800">환영합니다!</h1>
+        <p class="text-slate-500 mt-1 text-sm font-medium">합격 확률을 높이는 AI 취업 비서를 만나보세요.</p>
+      </div>
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="flex flex-col gap-1">
+            <label for="{{ field.id_for_label }}"
+                   class="text-sm font-bold text-slate-700">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <p class="text-xs text-slate-500 font-medium">{{ field.help_text|safe }}</p>
             {% endif %}
-
-            <button type="submit" class="w-full mt-4 py-3.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition-all shadow-sm active:scale-95 text-lg">
-                가입 완료하기
-            </button>
-        </form>
-
-        {% get_providers as socialaccount_providers %}
-        {% if socialaccount_providers %}
-        <div class="mt-8 relative flex items-center justify-center">
-            <div class="border-t border-slate-200 absolute w-full"></div>
-            <span class="bg-white px-4 text-xs font-bold text-slate-400 relative z-10">간편 회원가입</span>
-        </div>
-
-        <div class="mt-6 space-y-3">
-            {% for provider in socialaccount_providers %}
-            <form method="post" action="{% provider_login_url provider.id process='login' %}">
-                {% csrf_token %}
-                <button type="submit" class="w-full flex justify-center py-3 px-4 border border-slate-200 rounded-xl shadow-sm bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all">
-                {{ provider.name }} 계정으로 시작하기
-                </button>
-            </form>
+            {% for error in field.errors %}
+              <p class="text-xs text-red-500 font-bold">{{ error }}</p>
             {% endfor %}
-        </div>
+          </div>
+        {% endfor %}
+        {% if form.non_field_errors %}
+          <div class="p-3 mb-4 text-sm font-bold text-red-500 bg-red-50 rounded-xl">
+            {% for error in form.non_field_errors %}
+              {{ error }}
+            {% endfor %}
+          </div>
         {% endif %}
-
-        <p class="mt-8 text-center text-sm font-medium text-slate-500">
-            이미 계정이 있으신가요? <a href="{% url 'accounts:login' %}" class="text-blue-600 font-bold hover:underline">로그인</a>
-        </p>
+        <button type="submit"
+                class="w-full mt-4 py-3.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition-all shadow-sm active:scale-95 text-lg">
+          가입 완료하기
+        </button>
+      </form>
+      {% get_providers as socialaccount_providers %}
+      {% if socialaccount_providers %}
+        <div class="mt-8 relative flex items-center justify-center">
+          <div class="border-t border-slate-200 absolute w-full"></div>
+          <span class="bg-white px-4 text-xs font-bold text-slate-400 relative z-10">간편 회원가입</span>
+        </div>
+        <div class="mt-6 space-y-3">
+          {% for provider in socialaccount_providers %}
+            <form method="post"
+                  action="{% provider_login_url provider.id process='login' %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="w-full flex justify-center py-3 px-4 border border-slate-200 rounded-xl shadow-sm bg-white text-sm font-bold text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all">
+                {{ provider.name }} 계정으로 시작하기
+              </button>
+            </form>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <p class="mt-8 text-center text-sm font-medium text-slate-500">
+        이미 계정이 있으신가요? <a href="{% url 'accounts:login' %}"
+    class="text-blue-600 font-bold hover:underline">로그인</a>
+      </p>
     </div>
-</div>
-
-<style>
+  </div>
+  <style>
 /* 폼 필드 스타일 */
 form input {
     width: 100%;
@@ -83,5 +79,5 @@ form input:focus {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     background-color: #ffffff;
 }
-</style>
+  </style>
 {% endblock %}

@@ -1,20 +1,23 @@
 import json
+import logging
 import urllib.parse
 
 import requests
 from bs4 import BeautifulSoup
-from django.contrib.auth.decorators import login_required
 from django.conf import settings  # settings 임포트
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from django.shortcuts import render
-from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.http import require_POST
 
 from accounts.models import Profile
 from resumes.models import CoverLetter
 
 from .models import JobPost
+
+logger = logging.getLogger(__name__)
 
 # 1. 메인 랜딩 페이지 뷰
 
@@ -42,8 +45,8 @@ def fetch_real_news(keyword, max_count=3):
                 )
             if len(articles) >= max_count:
                 break
-    except Exception as e:
-        pass
+    except Exception:
+        logger.exception("기업 관련 뉴스 수집 중 오류가 발생했습니다.")
     return articles
 
 
@@ -52,9 +55,7 @@ def fetch_real_news(keyword, max_count=3):
 def ai_analyze_company(request):
     gmskey = settings.GMSKEY
     if not gmskey:
-        return JsonResponse(
-            {"status": "error", "message": "GMSKEY 설정이 없습니다."}, status=400
-        )
+        return JsonResponse({"status": "error", "message": "GMSKEY 설정이 없습니다."}, status=400)
 
     try:
         body = json.loads(request.body)
@@ -63,9 +64,7 @@ def ai_analyze_company(request):
         company_name = request.POST.get("company_name", "").strip()
 
     if not company_name:
-        return JsonResponse(
-            {"status": "error", "message": "기업명을 입력해주세요."}, status=400
-        )
+        return JsonResponse({"status": "error", "message": "기업명을 입력해주세요."}, status=400)
 
     real_articles = fetch_real_news(company_name, max_count=4)
 
@@ -114,8 +113,15 @@ def ai_analyze_company(request):
             {"status": "success", "data": parsed_data},
             json_dumps_params={"ensure_ascii": False},
         )
-    except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    except Exception:
+        logger.exception("기업 분석 처리 중 오류가 발생했습니다.")
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "기업 분석 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+            },
+            status=500,
+        )
 
 
 def index(request):
@@ -215,6 +221,7 @@ def recommended_jobs(request):
     )
 
 
+@login_required
 @ensure_csrf_cookie
 def company_analysis(request):
     return render(request, "jobs/company.html")
@@ -281,10 +288,7 @@ def ai_analyze_spec(request):
 
     certificates = user.certificates.all()
     cert_text = "\n".join(
-        [
-            f"- {c.name} (발급기관: {c.issuer}, 취득일: {c.date_acquired})"
-            for c in certificates
-        ]
+        [f"- {c.name} (발급기관: {c.issuer}, 취득일: {c.date_acquired})" for c in certificates]
     )
 
     activities = user.activities.all()
@@ -313,19 +317,19 @@ def ai_analyze_spec(request):
     [구직자 스펙 정보 요약]
     - 보유 기술 스택: {', '.join(skills_list) if skills_list else '없음'}
     - 한 줄 자기소개: {profile_bio or '없음'}
-    
+
     - 학력 사항:
     {edu_text if edu_text else '없음'}
-    
+
     - 자격증:
     {cert_text if cert_text else '없음'}
-    
+
     - 대외활동:
     {act_text if act_text else '없음'}
-    
+
     - 프로젝트 경험:
     {proj_text if proj_text else '없음'}
-    
+
     - 경력 및 경험:
     {exp_text if exp_text else '없음'}
     """
@@ -333,9 +337,9 @@ def ai_analyze_spec(request):
     prompt = f"""
     당신은 모든 산업 및 직무 분야의 취업 준비생들을 위한 최고의 커리어 컨설턴트 AI입니다.
     아래 구직자의 인적 사항 및 스펙 요약을 바탕으로 프로페셔널한 맞춤 기업 분석 및 매칭을 해 주십시오.
-    
+
     {spec_summary}
-    
+
     다음 2가지 미션을 완벽히 수행해 주세요.
     1. 이 구직자의 전체적인 강점과 장점을 한글 2-3줄 요약평으로 제공하십시오.
     2. 구직자의 주 무기(기술, 전공, 프로젝트, 대외활동 등)를 저격할 수 있는 해당 분야의 대표적인 한국 내 기업(실존 기업 위주) 3곳을 매칭해 추천해 주십시오.
@@ -345,7 +349,7 @@ def ai_analyze_spec(request):
        - 추천 상세 이유 (reason, 사용자의 스펙 요소를 구체적으로 거론하며 논리적으로 설명)
        - 추천 매칭율 (match_rate, 0~100 사이의 정수)
        - 해당 기업 지원 시 자기소개서에 쓰기 가장 좋은 킬러 문항 2가지 (recommended_questions, 예: '이전 프로젝트에서 매출을 20% 상승시킨 전략은 무엇인가요?', '팀 내 갈등을 해결하고 목표를 달성한 경험')
-    
+
     [응답 조건]
     - 반드시 마크다운 블록(```json) 없이 오직 원시 JSON 데이터만을 반환해야 합니다.
     - JSON의 Key 구조는 정확히 아래의 형식을 만족해 주십시오:
@@ -392,12 +396,12 @@ def ai_analyze_spec(request):
             json_dumps_params={"ensure_ascii": False},
         )
 
-    except Exception as e:
-        # 혹시 response_format에 대한 에러가 날 수 있으므로 상세 에러 반환
+    except Exception:
+        logger.exception("AI 기업·직무 추천 처리 중 오류가 발생했습니다.")
         return JsonResponse(
             {
                 "status": "error",
-                "message": f"GMS API 분석 요청 중 오류가 발생했습니다: {str(e)}",
+                "message": "기업·직무 추천 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
             },
             status=500,
             json_dumps_params={"ensure_ascii": False},
@@ -414,9 +418,7 @@ def ai_generate_coverletter(request):
     gmskey = settings.GMSKEY
 
     if not gmskey:
-        return JsonResponse(
-            {"status": "error", "message": "GMSKEY 설정이 없습니다."}, status=400
-        )
+        return JsonResponse({"status": "error", "message": "GMSKEY 설정이 없습니다."}, status=400)
 
     try:
         body = json.loads(request.body)
@@ -448,27 +450,23 @@ def ai_generate_coverletter(request):
         pass
 
     educations = user.educations.all()
-    edu_text = "\n".join(
-        [f"- {e.school_name} {e.major} ({e.degree})" for e in educations]
-    )
+    edu_text = "\n".join([f"- {e.school_name} {e.major} ({e.degree})" for e in educations])
     certificates = user.certificates.all()
     cert_text = "\n".join([f"- {c.name}" for c in certificates])
     projects = user.projects.all()
     proj_text = "\n".join([f"- {p.title}: {p.description}" for p in projects])
     experiences = user.experiences.all()
-    exp_text = "\n".join(
-        [f"- {ex.title} at {ex.company}: {ex.description}" for ex in experiences]
-    )
+    exp_text = "\n".join([f"- {ex.title} at {ex.company}: {ex.description}" for ex in experiences])
 
     prompt = f"""
     당신은 취업 준비생의 자소서를 전문적으로 첨삭하고 완성해주는 글쓰기 마스터 AI입니다.
     다음 구직자의 정보와 지원하려는 기업 및 문항 정보를 확인한 뒤, 논리 정연하고 설득력 있는 자기소개서 초안을 작성해 주십시오.
-    
+
     [지원 목표]
     - 기업명: {company_name}
     - 희망 직무: {role}
     - 작성할 자소서 질문 문항: "{question}"
-    
+
     [지원자 스펙 요약]
     - 보유 스킬: {', '.join(skills_list)}
     - 자기소개: {profile_bio}
@@ -476,7 +474,7 @@ def ai_generate_coverletter(request):
     - 자격증: {cert_text}
     - 프로젝트: {proj_text}
     - 경력/경험: {exp_text}
-    
+
     [작성 원칙]
     1. 사람다운 자연스러운 어투: '다각적인', '혁신적인', '이바지하겠습니다' 등 AI 특유의 기계적인 표현을 절대 쓰지 마십시오. 담백한 사람의 문체로 작성하십시오.
     2. 차별화: 지원자의 경험 속 구체적인 의사결정, 수치화된 성과를 1개 이상 끌어와 "이 사람만 쓸 수 있는 문장"을 만드십시오.
@@ -485,7 +483,7 @@ def ai_generate_coverletter(request):
     5. 출력 형식: HTML이나 마크다운을 사용하지 말고 안전한 일반 텍스트로만 작성하십시오.
     6. 기업 연결: 지원 기업과 지원자의 경험을 억지스럽지 않게 연결하십시오.
     7. 분량 및 톤: 800자 내외, 정중하고 담백한 경어체.
-    
+
     위 원칙을 모두 반영해, 기계가 쓴 티가 나지 않는 '실제 합격자의 깔끔하고 프로페셔널한 자기소개서 초안'을 완성해 주십시오.
     """
 
@@ -513,11 +511,12 @@ def ai_generate_coverletter(request):
             json_dumps_params={"ensure_ascii": False},
         )
 
-    except Exception as e:
+    except Exception:
+        logger.exception("AI 자기소개서 초안 생성 중 오류가 발생했습니다.")
         return JsonResponse(
             {
                 "status": "error",
-                "message": f"자기소개서 초안 작성 중 오류가 발생했습니다: {str(e)}",
+                "message": "자기소개서 초안 작성 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
             },
             status=500,
             json_dumps_params={"ensure_ascii": False},
@@ -581,11 +580,12 @@ def ai_save_coverletter(request):
             status=400,
             json_dumps_params={"ensure_ascii": False},
         )
-    except Exception as e:
+    except Exception:
+        logger.exception("AI 자기소개서 저장 중 오류가 발생했습니다.")
         return JsonResponse(
             {
                 "status": "error",
-                "message": f"자기소개서 저장 중 오류가 발생했습니다: {str(e)}",
+                "message": "자기소개서 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
             },
             status=500,
             json_dumps_params={"ensure_ascii": False},

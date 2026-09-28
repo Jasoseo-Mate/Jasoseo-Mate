@@ -1,32 +1,39 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}이력서 {% if resume %}수정{% else %}생성{% endif %} - 자소서 메이트{% endblock %}
-
 {% block content %}
-<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">이력서 {% if resume %}수정{% else %}추가{% endif %}</h1>
+  <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
+    <h1 class="text-2xl font-bold text-slate-800 mb-6">이력서 {% if resume %}수정{% else %}추가{% endif %}</h1>
     {% if form.errors %}<div class="mb-4 rounded bg-red-50 p-3 text-sm text-red-700">입력값을 확인해 주세요. {{ form.errors }}</div>{% endif %}
-    <form method="post" {% if resume %}action="{% url 'resumes:resume_update' resume.pk %}"{% else %}action="{% url 'resumes:resume_create' %}"{% endif %} class="space-y-4">
-        {% csrf_token %}
-        <div>
-            <label for="title" class="block text-sm font-medium text-gray-700">이력서 제목</label>
-            <input type="text" id="title" name="title" value="{{ form.title.value|default_if_none:'' }}" required
-                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-        </div>
-        <div>
-            <label for="content" class="block text-sm font-medium text-gray-700">이력서 내용</label>
-            <textarea id="content" name="content" rows="10"
-                      class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ form.content.value|default_if_none:'' }}</textarea>
-        </div>
-        <div class="flex justify-between">
-            <button type="submit"
-                    class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                저장
-            </button>
-            <a href="{% url 'resumes:resume_list' %}" class="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200">
-                취소
-            </a>
-        </div>
+    <form method="post"
+          {% if resume %}action="{% url 'resumes:resume_update' resume.pk %}"{% else %}action="{% url 'resumes:resume_create' %}"{% endif %}
+          class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label for="title" class="block text-sm font-medium text-slate-700">이력서 제목</label>
+        <input type="text"
+               id="title"
+               name="title"
+               value="{{ form.title.value|default_if_none:'' }}"
+               required
+               class="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div>
+        <label for="content" class="block text-sm font-medium text-slate-700">이력서 내용</label>
+        <textarea id="content"
+                  name="content"
+                  rows="10"
+                  class="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">{{ form.content.value|default_if_none:'' }}</textarea>
+      </div>
+      <div class="flex justify-between">
+        <button type="submit"
+                class="px-4 py-2 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          저장
+        </button>
+        <a href="{% url 'resumes:resume_list' %}"
+           class="px-4 py-2 border border-slate-300 text-slate-700 rounded-md hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-200">
+          취소
+        </a>
+      </div>
     </form>
-</div>
+  </div>
 {% endblock %}

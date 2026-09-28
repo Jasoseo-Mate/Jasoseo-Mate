@@ -1,5 +1,6 @@
-from django.db import models
 from django.conf import settings
+from django.db import models
+
 from jobs.models import Skill
 
 
@@ -49,6 +50,9 @@ class Education(models.Model):
         verbose_name = "학력사항"
         verbose_name_plural = "학력사항"
 
+    def __str__(self):
+        return f"{self.school_name} - {self.major}"
+
 
 class Certificate(models.Model):
     """
@@ -65,6 +69,9 @@ class Certificate(models.Model):
     class Meta:
         verbose_name = "자격증"
         verbose_name_plural = "자격증"
+
+    def __str__(self):
+        return f"{self.name} ({self.issuer})"
 
 
 class Activity(models.Model):
@@ -84,6 +91,9 @@ class Activity(models.Model):
         verbose_name = "대내외활동"
         verbose_name_plural = "대내외활동"
 
+    def __str__(self):
+        return self.title
+
 
 class Project(models.Model):
     """
@@ -102,3 +112,6 @@ class Project(models.Model):
     class Meta:
         verbose_name = "프로젝트"
         verbose_name_plural = "프로젝트"
+
+    def __str__(self):
+        return self.title

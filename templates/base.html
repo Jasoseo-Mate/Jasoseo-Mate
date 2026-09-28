@@ -1,76 +1,77 @@
 <!DOCTYPE html>
 <html class="light" lang="ko">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>{% block title %}자소서 메이트{% endblock %}</title>
-    
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-    
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+          rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet" />
     <style>
         body { background-color: #f8fafc; color: #0f172a; font-family: 'Pretendard', -apple-system, sans-serif; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     </style>
     {% block extra_head %}{% endblock %}
-</head>
-<body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-200">
-
-<header class="bg-white/80 backdrop-blur-md fixed top-0 w-full z-50 border-b border-slate-200 transition-all">
-    <nav class="flex justify-between items-center w-full px-6 max-w-6xl mx-auto h-16">
+  </head>
+  <body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-200">
+    <header class="bg-white/80 backdrop-blur-md fixed top-0 w-full z-50 border-b border-slate-200 transition-all">
+      <nav class="flex justify-between items-center w-full px-6 max-w-6xl mx-auto h-16">
         <div class="flex items-center gap-8">
-            <a class="text-xl font-extrabold text-blue-600 tracking-tight flex items-center gap-1" href="{% url 'index' %}">
-                <span class="text-2xl">✨</span> 자소서 메이트
-            </a>
-            <div class="hidden md:flex gap-6 items-center h-full">
-                <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'jobs:company_analysis' %}">기업 분석</a>
-                <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'jobs:ai_matching' %}">자소서 생성</a>
-                <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'jobs:my_spec' %}">맞춤 채용공고</a>
-                <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'community:post_list' %}">커뮤니티</a>
-                <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'accounts:profile_dashboard' %}">내 스펙</a>
-                <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors" href="{% url 'resumes:coverletter_list' %}">내 자소서</a>
-            </div>
+          <a class="text-xl font-extrabold text-blue-600 tracking-tight flex items-center gap-1"
+             href="{% url 'index' %}">
+            <span class="text-2xl">✨</span> 자소서 메이트
+          </a>
+          <div class="hidden md:flex gap-6 items-center h-full">
+            <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors"
+               href="{% url 'jobs:company_analysis' %}">기업 분석</a>
+            <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors"
+               href="{% url 'jobs:ai_matching' %}">자소서 생성</a>
+            <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors"
+               href="{% url 'jobs:my_spec' %}">맞춤 채용공고</a>
+            <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors"
+               href="{% url 'community:post_list' %}">커뮤니티</a>
+            <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors"
+               href="{% url 'accounts:profile_dashboard' %}">내 스펙</a>
+            <a class="text-slate-600 font-bold hover:text-blue-600 transition-colors"
+               href="{% url 'resumes:coverletter_list' %}">내 자소서</a>
+          </div>
         </div>
-        
         <div class="flex items-center gap-4">
-            {% if user.is_authenticated %}
-                <a href="{% url 'accounts:profile_dashboard' %}" class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
-                    <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">{{ user.username|make_list|first|upper }}</div>
-                    <span class="font-bold text-sm text-slate-700">{{ user.username }}님</span>
-                </a>
-                <form method="post" action="{% url 'accounts:logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="text-sm font-bold text-slate-500 hover:text-red-500 transition-colors">로그아웃</button>
-                </form>
-            {% else %}
-                <a href="{% url 'accounts:login' %}" class="text-slate-600 font-bold text-sm hover:text-blue-600 transition-colors">로그인</a>
-                <a href="{% url 'accounts:signup' %}" class="px-4 py-2 bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-sm active:scale-95">3초 만에 시작하기</a>
-            {% endif %}
+          {% if user.is_authenticated %}
+            <a href="{% url 'accounts:profile_dashboard' %}"
+               class="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full hover:bg-slate-200 transition-colors">
+              <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">{{ user.username|make_list|first|upper }}</div>
+              <span class="font-bold text-sm text-slate-700">{{ user.username }}님</span>
+            </a>
+            <form method="post" action="{% url 'accounts:logout' %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="text-sm font-bold text-slate-500 hover:text-red-500 transition-colors">로그아웃</button>
+            </form>
+          {% else %}
+            <a href="{% url 'accounts:login' %}"
+               class="text-slate-600 font-bold text-sm hover:text-blue-600 transition-colors">로그인</a>
+            <a href="{% url 'accounts:signup' %}"
+               class="px-4 py-2 bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-slate-900 transition-all shadow-sm active:scale-95">3초 만에 시작하기</a>
+          {% endif %}
         </div>
-    </nav>
-</header>
-
-<div class="pt-16 min-h-[calc(100vh-100px)]">
-    {% block content %}
-    {% endblock %}
-</div>
-
-<footer class="bg-white mt-20 border-t border-slate-200 py-10">
-    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div>
-            <div class="text-lg font-extrabold text-slate-800 mb-1">✨ 자소서 메이트</div>
-            <p class="text-slate-500 text-sm font-medium">나를 가장 잘 아는 AI 취업 비서</p>
-        </div>
-        <div class="flex gap-6 text-sm font-medium text-slate-400">
-            <a href="#" class="hover:text-slate-600 transition-colors">이용약관</a>
-            <a href="#" class="hover:text-slate-600 transition-colors">개인정보처리방침</a>
-            <a href="#" class="hover:text-slate-600 transition-colors">문의하기</a>
-        </div>
+      </nav>
+    </header>
+    <div class="pt-16 min-h-[calc(100vh-100px)]">
+      {% block content %}{% endblock %}
     </div>
-</footer>
-
-<script>
+    <footer class="bg-white mt-20 border-t border-slate-200 py-10">
+      <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div>
+          <div class="text-lg font-extrabold text-slate-800 mb-1">✨ 자소서 메이트</div>
+          <p class="text-slate-500 text-sm font-medium">나를 가장 잘 아는 AI 취업 비서</p>
+        </div>
+        <p class="text-sm font-medium text-slate-400">© 자소서 메이트</p>
+      </div>
+    </footer>
+    <script>
     window.getCsrfToken = function() {
         const token = document.cookie
             .split(';')
@@ -78,7 +79,7 @@
             .find(cookie => cookie.startsWith('csrftoken='));
         return token ? decodeURIComponent(token.slice('csrftoken='.length)) : '';
     };
-</script>
-{% block extra_script %}{% endblock %}
-</body>
+    </script>
+    {% block extra_script %}{% endblock %}
+  </body>
 </html>

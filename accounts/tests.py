@@ -1,8 +1,8 @@
 from datetime import date
 
 from django.contrib.auth.models import User
-from django.test import TestCase
 from django.template.loader import get_template
+from django.test import TestCase
 from django.urls import reverse
 
 from .models import Education
@@ -22,15 +22,11 @@ class AccountSecurityTests(TestCase):
         self.client.force_login(self.attacker)
 
     def test_cannot_update_another_users_education(self):
-        response = self.client.get(
-            reverse("accounts:education_edit", args=[self.education.pk])
-        )
+        response = self.client.get(reverse("accounts:education_edit", args=[self.education.pk]))
         self.assertEqual(response.status_code, 404)
 
     def test_cannot_delete_another_users_education(self):
-        response = self.client.post(
-            reverse("accounts:education_delete", args=[self.education.pk])
-        )
+        response = self.client.post(reverse("accounts:education_delete", args=[self.education.pk]))
         self.assertEqual(response.status_code, 404)
         self.assertTrue(Education.objects.filter(pk=self.education.pk).exists())
 
@@ -53,9 +49,7 @@ class AccountSecurityTests(TestCase):
     def test_allauth_redirect_preserves_next(self):
         self.client.logout()
         response = self.client.get("/allauth/login/?next=/accounts/profile/")
-        self.assertEqual(
-            response.url, "/accounts/login/?next=/accounts/profile/"
-        )
+        self.assertEqual(response.url, "/accounts/login/?next=/accounts/profile/")
 
     def test_login_uses_safe_next_url(self):
         self.client.logout()
@@ -67,9 +61,7 @@ class AccountSecurityTests(TestCase):
                 "next": "/accounts/profile/",
             },
         )
-        self.assertRedirects(
-            response, "/accounts/profile/", fetch_redirect_response=False
-        )
+        self.assertRedirects(response, "/accounts/profile/", fetch_redirect_response=False)
 
     def test_signup_redirects_after_success(self):
         self.client.logout()
@@ -83,5 +75,3 @@ class AccountSecurityTests(TestCase):
             },
         )
         self.assertRedirects(response, "/jobs/dashboard/", fetch_redirect_response=False)
-
-# Create your tests here.

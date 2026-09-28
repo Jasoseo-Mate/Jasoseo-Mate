@@ -40,5 +40,3 @@ class ResumeValidationTests(TestCase):
             content="본문",
         )
         self.assertIn("백엔드 개발자", str(coverletter))
-
-# Create your tests here.

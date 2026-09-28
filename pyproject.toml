@@ -1,0 +1,22 @@
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "DJ"]
+
+[tool.ruff.lint.per-file-ignores]
+"accounts/views.py" = ["E501"]
+"accounts/forms.py" = ["E501"]
+"jobs/views.py" = ["E501"]
+"jobs/management/commands/seed_demo_data.py" = ["E501"]
+"resumes/forms.py" = ["E501"]
+
+[tool.djlint]
+profile = "django"
+indent = 2
+max_line_length = 120

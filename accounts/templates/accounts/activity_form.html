@@ -1,43 +1,41 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}대외활동 및 경험 - 자소서 메이트{% endblock %}
-
 {% block content %}
-<div class="bg-slate-50 min-h-screen pb-12 pt-8">
+  <div class="bg-slate-50 min-h-screen pb-12 pt-8">
     <div class="max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-sm border border-slate-200">
-        <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
-            <span class="p-2 bg-yellow-100 text-yellow-600 rounded-lg text-xl">🤝</span>
-            <h1 class="text-2xl font-bold text-slate-800">{% if object %}대외활동 및 경험 수정{% else %}대외활동 및 경험 추가{% endif %}</h1>
-        </div>
-
-        <form method="post" class="space-y-5">
-            {% csrf_token %}
-            {% for field in form %}
-                <div class="flex flex-col gap-1">
-                    <label for="{{ field.id_for_label }}" class="text-sm font-bold text-slate-700">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <p class="text-xs text-slate-500">{{ field.help_text }}</p>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <p class="text-xs text-red-500 font-medium">{{ error }}</p>
-                    {% endfor %}
-                </div>
+      <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+        <span class="p-2 bg-yellow-100 text-yellow-600 rounded-lg text-xl">🤝</span>
+        <h1 class="text-2xl font-bold text-slate-800">{% if object %}대외활동 및 경험 수정{% else %}대외활동 및 경험 추가{% endif %}</h1>
+      </div>
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="flex flex-col gap-1">
+            <label for="{{ field.id_for_label }}"
+                   class="text-sm font-bold text-slate-700">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <p class="text-xs text-slate-500">{{ field.help_text }}</p>
+            {% endif %}
+            {% for error in field.errors %}
+              <p class="text-xs text-red-500 font-medium">{{ error }}</p>
             {% endfor %}
-
-            <div class="flex justify-end gap-3 pt-6 border-t border-slate-100 mt-6">
-                <a href="{% url 'accounts:profile_dashboard' %}" class="px-6 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors">
-                    취소
-                </a>
-                <button type="submit" class="px-8 py-2.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition-colors shadow-sm active:scale-95">
-                    저장하기
-                </button>
-            </div>
-        </form>
+          </div>
+        {% endfor %}
+        <div class="flex justify-end gap-3 pt-6 border-t border-slate-100 mt-6">
+          <a href="{% url 'accounts:profile_dashboard' %}"
+             class="px-6 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-200 transition-colors">
+            취소
+          </a>
+          <button type="submit"
+                  class="px-8 py-2.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition-colors shadow-sm active:scale-95">
+            저장하기
+          </button>
+        </div>
+      </form>
     </div>
-</div>
-
-<style>
+  </div>
+  <style>
 /* 폼 필드 스타일 통일 */
 form input[type="text"],
 form input[type="date"],
@@ -65,5 +63,5 @@ form textarea {
     min-height: 120px;
     resize: vertical;
 }
-</style>
+  </style>
 {% endblock %}

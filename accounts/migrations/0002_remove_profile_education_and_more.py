@@ -28,9 +28,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="profile",
             name="bio",
-            field=models.CharField(
-                blank=True, help_text="간단한 자기소개", max_length=255
-            ),
+            field=models.CharField(blank=True, help_text="간단한 자기소개", max_length=255),
         ),
         migrations.CreateModel(
             name="Activity",
@@ -113,9 +111,7 @@ class Migration(migrations.Migration):
                 ("major", models.CharField(max_length=100, verbose_name="전공")),
                 (
                     "degree",
-                    models.CharField(
-                        max_length=50, verbose_name="학위 (예: 학사, 석사)"
-                    ),
+                    models.CharField(max_length=50, verbose_name="학위 (예: 학사, 석사)"),
                 ),
                 ("start_date", models.DateField(verbose_name="입학일")),
                 (

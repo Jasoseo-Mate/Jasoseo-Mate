@@ -1,61 +1,66 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}자소서 메이트 - 당신의 AI 취업 비서{% endblock %}
-
 {% block content %}
-<!-- Hero Section -->
-<div class="relative overflow-hidden bg-slate-50 pt-20 pb-32 border-b border-slate-200">
+  <!-- Hero Section -->
+  <div class="relative overflow-hidden bg-slate-50 pt-20 pb-32 border-b border-slate-200">
     <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30"></div>
     <div class="relative max-w-6xl mx-auto px-6 text-center">
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-bold text-sm mb-8 animate-bounce shadow-sm">
-            <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> 최신 GPT AI 분석 엔진 탑재
-        </div>
-        <h1 class="text-5xl md:text-7xl font-extrabold text-slate-800 tracking-tight leading-tight mb-6">
-            내 경험이 합격이 되는 <br class="hidden md:block">
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">가장 똑똑한 방법</span>
-        </h1>
-        <p class="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto font-medium">
-            여기저기 똑같이 넣는 자소서는 이제 그만.<br class="hidden md:block">
-            내 스펙을 꼼꼼히 분석해 나에게 맞는 기업과 매력적인 자소서 초안을 완성해 드릴게요.
-        </p>
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            {% if user.is_authenticated %}
-                <a href="{% url 'jobs:ai_matching' %}" class="px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-2xl hover:bg-blue-700 shadow-lg hover:shadow-blue-600/30 transition-all hover:-translate-y-1">AI 자소서 만들어보기</a>
-                <a href="{% url 'accounts:profile_dashboard' %}" class="px-8 py-4 bg-white text-slate-700 text-lg font-bold rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm transition-all">내 스펙 채우기</a>
-            {% else %}
-                <a href="{% url 'accounts:signup' %}" class="px-8 py-4 bg-slate-800 text-white text-lg font-bold rounded-2xl hover:bg-slate-900 shadow-lg hover:shadow-slate-800/30 transition-all hover:-translate-y-1">3초 만에 시작하기</a>
-            {% endif %}
-        </div>
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-bold text-sm mb-8 animate-bounce shadow-sm">
+        <span class="w-2.5 h-2.5 rounded-full bg-blue-600"></span> 최신 GPT AI 분석 엔진 탑재
+      </div>
+      <h1 class="text-5xl md:text-7xl font-extrabold text-slate-800 tracking-tight leading-tight mb-6">
+        내 경험이 합격이 되는
+        <br class="hidden md:block">
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">가장 똑똑한 방법</span>
+      </h1>
+      <p class="text-lg md:text-xl text-slate-500 mb-10 max-w-2xl mx-auto font-medium">
+        여기저기 똑같이 넣는 자소서는 이제 그만.
+        <br class="hidden md:block">
+        내 스펙을 꼼꼼히 분석해 나에게 맞는 기업과 매력적인 자소서 초안을 완성해 드릴게요.
+      </p>
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        {% if user.is_authenticated %}
+          <a href="{% url 'jobs:ai_matching' %}"
+             class="px-8 py-4 bg-blue-600 text-white text-lg font-bold rounded-2xl hover:bg-blue-700 shadow-lg hover:shadow-blue-600/30 transition-all hover:-translate-y-1">AI 자소서 만들어보기</a>
+          <a href="{% url 'accounts:profile_dashboard' %}"
+             class="px-8 py-4 bg-white text-slate-700 text-lg font-bold rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 shadow-sm transition-all">내 스펙 채우기</a>
+        {% else %}
+          <a href="{% url 'accounts:signup' %}"
+             class="px-8 py-4 bg-slate-800 text-white text-lg font-bold rounded-2xl hover:bg-slate-900 shadow-lg hover:shadow-slate-800/30 transition-all hover:-translate-y-1">3초 만에 시작하기</a>
+        {% endif %}
+      </div>
     </div>
-</div>
-
-<!-- Features Section -->
-<div class="py-24 bg-white">
+  </div>
+  <!-- Features Section -->
+  <div class="py-24 bg-white">
     <div class="max-w-6xl mx-auto px-6">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl font-extrabold text-slate-800 mb-4">막막한 취업 준비, AI가 다 알아서</h2>
-            <p class="text-slate-500 font-medium">복잡한 기업 분석부터 자소서 초안까지, 나에게 딱 맞게 챙겨드려요.</p>
-        </div>
-        <div class="grid md:grid-cols-3 gap-8">
-            <!-- Feature 1 (딥러닝 기업 분석) -->
-            <a href="{% url 'jobs:company_analysis' %}" class="block p-8 rounded-3xl bg-white border border-slate-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 group">
-                <div class="w-16 h-16 bg-green-50 group-hover:bg-green-100 rounded-2xl flex items-center justify-center text-3xl mb-6 transition-colors">📈</div>
-                <h3 class="text-xl font-extrabold text-slate-800 mb-3 group-hover:text-green-600 transition-colors">AI 기업 분석 →</h3>
-                <p class="text-slate-500 font-medium leading-relaxed">최신 뉴스부터 재무 정보까지 싹 모아서, 면접과 자소서에 꼭 필요한 알짜배기 정보만 꼼꼼하게 요약해 드릴게요.</p>
-            </a>
-            <!-- Feature 2 (AI 맞춤형 자소서) -->
-            <a href="{% url 'jobs:ai_matching' %}" class="block p-8 rounded-3xl bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 group">
-                <div class="w-16 h-16 bg-indigo-50 group-hover:bg-indigo-100 rounded-2xl flex items-center justify-center text-3xl mb-6 transition-colors">✨</div>
-                <h3 class="text-xl font-extrabold text-slate-800 mb-3 group-hover:text-indigo-600 transition-colors">나만의 맞춤 자소서 →</h3>
-                <p class="text-slate-500 font-medium leading-relaxed">어떤 경험을 하셨는지 분석해서 지원 기업이 딱 좋아할 만한 매력적인 자소서 초안을 뚝딱 만들어 드려요.</p>
-            </a>
-            <!-- Feature 3 (스마트 공고 매칭) -->
-            <a href="{% url 'jobs:my_spec' %}" class="block p-8 rounded-3xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 group">
-                <div class="w-16 h-16 bg-blue-50 group-hover:bg-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-6 transition-colors">🎯</div>
-                <h3 class="text-xl font-extrabold text-slate-800 mb-3 group-hover:text-blue-600 transition-colors">나에게 딱 맞는 공고 추천 →</h3>
-                <p class="text-slate-500 font-medium leading-relaxed">수많은 채용 공고 중에서 내 스펙과 역량에 가장 잘 맞는 알짜 기업만 쏙쏙 골라 스마트하게 추천해 드릴게요.</p>
-            </a>
-        </div>
+      <div class="text-center mb-16">
+        <h2 class="text-3xl font-extrabold text-slate-800 mb-4">막막한 취업 준비, AI가 다 알아서</h2>
+        <p class="text-slate-500 font-medium">복잡한 기업 분석부터 자소서 초안까지, 나에게 딱 맞게 챙겨드려요.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Feature 1 (딥러닝 기업 분석) -->
+        <a href="{% url 'jobs:company_analysis' %}"
+           class="block p-8 rounded-3xl bg-white border border-slate-200 hover:border-green-300 hover:shadow-xl transition-all duration-300 group">
+          <div class="w-16 h-16 bg-green-50 group-hover:bg-green-100 rounded-2xl flex items-center justify-center text-3xl mb-6 transition-colors">📈</div>
+          <h3 class="text-xl font-extrabold text-slate-800 mb-3 group-hover:text-green-600 transition-colors">AI 기업 분석 →</h3>
+          <p class="text-slate-500 font-medium leading-relaxed">최신 뉴스부터 재무 정보까지 싹 모아서, 면접과 자소서에 꼭 필요한 알짜배기 정보만 꼼꼼하게 요약해 드릴게요.</p>
+        </a>
+        <!-- Feature 2 (AI 맞춤형 자소서) -->
+        <a href="{% url 'jobs:ai_matching' %}"
+           class="block p-8 rounded-3xl bg-white border border-slate-200 hover:border-indigo-300 hover:shadow-xl transition-all duration-300 group">
+          <div class="w-16 h-16 bg-indigo-50 group-hover:bg-indigo-100 rounded-2xl flex items-center justify-center text-3xl mb-6 transition-colors">✨</div>
+          <h3 class="text-xl font-extrabold text-slate-800 mb-3 group-hover:text-indigo-600 transition-colors">나만의 맞춤 자소서 →</h3>
+          <p class="text-slate-500 font-medium leading-relaxed">어떤 경험을 하셨는지 분석해서 지원 기업이 딱 좋아할 만한 매력적인 자소서 초안을 뚝딱 만들어 드려요.</p>
+        </a>
+        <!-- Feature 3 (스마트 공고 매칭) -->
+        <a href="{% url 'jobs:my_spec' %}"
+           class="block p-8 rounded-3xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 group">
+          <div class="w-16 h-16 bg-blue-50 group-hover:bg-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-6 transition-colors">🎯</div>
+          <h3 class="text-xl font-extrabold text-slate-800 mb-3 group-hover:text-blue-600 transition-colors">나에게 딱 맞는 공고 추천 →</h3>
+          <p class="text-slate-500 font-medium leading-relaxed">수많은 채용 공고 중에서 내 스펙과 역량에 가장 잘 맞는 알짜 기업만 쏙쏙 골라 스마트하게 추천해 드릴게요.</p>
+        </a>
+      </div>
     </div>
-</div>
+  </div>
 {% endblock %}

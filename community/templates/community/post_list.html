@@ -1,69 +1,68 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}취준생 커뮤니티 - 자소서 메이트{% endblock %}
-
 {% block content %}
-<div class="max-w-6xl mx-auto px-6 py-10">
+  <div class="max-w-6xl mx-auto px-6 py-10">
     <div class="flex justify-between items-end mb-8">
-        <div>
-            <h1 class="text-3xl font-extrabold text-slate-800 mb-2">취준생 커뮤니티 💬</h1>
-            <p class="text-slate-500 font-medium">면접 꿀팁부터 고민 상담까지, 자유롭게 소통해보세요!</p>
-        </div>
-        <a href="{% url 'community:post_create' %}" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2">
-            <span class="material-symbols-outlined text-sm">edit</span> 글쓰기
-        </a>
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-800 mb-2">취준생 커뮤니티 💬</h1>
+        <p class="text-slate-500 font-medium">면접 꿀팁부터 고민 상담까지, 자유롭게 소통해보세요!</p>
+      </div>
+      <a href="{% url 'community:post_create' %}"
+         class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">edit</span> 글쓰기
+      </a>
     </div>
-
     {% if messages %}
-    <div class="mb-6">
+      <div class="mb-6">
         {% for message in messages %}
-        <div class="p-4 rounded-xl text-sm font-bold {% if message.tags == 'error' %}bg-red-50 text-red-600{% else %}bg-green-50 text-green-600{% endif %}">
+          <div class="p-4 rounded-xl text-sm font-bold {% if message.tags == 'error' %}bg-red-50 text-red-600{% else %}bg-green-50 text-green-600{% endif %}">
             {{ message }}
-        </div>
+          </div>
         {% endfor %}
-    </div>
+      </div>
     {% endif %}
-
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="grid grid-cols-12 gap-4 p-4 bg-slate-50 border-b border-slate-200 text-sm font-bold text-slate-500 text-center">
-            <div class="col-span-8 text-left pl-4">제목</div>
-            <div class="col-span-2 text-left">작성자</div>
-            <div class="col-span-1">조회수</div>
-            <div class="col-span-1">작성일</div>
-        </div>
-        
-        <div class="divide-y divide-slate-100">
-            {% for post in posts %}
-            <a href="{% url 'community:post_detail' post.pk %}" class="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50 transition-colors text-slate-700">
-                <div class="col-span-8 pl-4 flex items-center gap-2">
-                    <span class="font-bold text-base truncate">{{ post.title }}</span>
-                    {% if post.comment_count > 0 %}
-                    <span class="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">{{ post.comment_count }}</span>
-                    {% endif %}
-                </div>
-                <div class="col-span-2 text-sm font-medium truncate flex items-center gap-2">
-                    <div class="w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-xs font-bold text-slate-600">
-                        {{ post.author.username|make_list|first|upper }}
-                    </div>
-                    {{ post.author.username }}
-                </div>
-                <div class="col-span-1 text-sm text-center text-slate-500">{{ post.views }}</div>
-                <div class="col-span-1 text-sm text-center text-slate-500">{{ post.created_at|date:"m.d" }}</div>
-            </a>
-            {% empty %}
-            <div class="p-12 text-center text-slate-500 font-medium">
-                <div class="text-4xl mb-4">📝</div>
-                첫 번째 게시글을 작성해보세요!
+      <div class="grid grid-cols-12 gap-4 p-4 bg-slate-50 border-b border-slate-200 text-sm font-bold text-slate-500 text-center">
+        <div class="col-span-8 text-left pl-4">제목</div>
+        <div class="col-span-2 text-left">작성자</div>
+        <div class="col-span-1">조회수</div>
+        <div class="col-span-1">작성일</div>
+      </div>
+      <div class="divide-y divide-slate-100">
+        {% for post in posts %}
+          <a href="{% url 'community:post_detail' post.pk %}"
+             class="grid grid-cols-12 gap-4 p-4 items-center hover:bg-slate-50 transition-colors text-slate-700">
+            <div class="col-span-8 pl-4 flex items-center gap-2">
+              <span class="font-bold text-base truncate">{{ post.title }}</span>
+              {% if post.comment_count > 0 %}
+                <span class="text-xs font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">{{ post.comment_count }}</span>
+              {% endif %}
             </div>
-            {% endfor %}
-        </div>
+            <div class="col-span-2 text-sm font-medium truncate flex items-center gap-2">
+              <div class="w-6 h-6 bg-slate-200 rounded-full flex items-center justify-center text-xs font-bold text-slate-600">
+                {{ post.author.username|make_list|first|upper }}
+              </div>
+              {{ post.author.username }}
+            </div>
+            <div class="col-span-1 text-sm text-center text-slate-500">{{ post.views }}</div>
+            <div class="col-span-1 text-sm text-center text-slate-500">{{ post.created_at|date:"m.d" }}</div>
+          </a>
+        {% empty %}
+          <div class="p-12 text-center text-slate-500 font-medium">
+            <div class="text-4xl mb-4">📝</div>
+            첫 번째 게시글을 작성해보세요!
+          </div>
+        {% endfor %}
+      </div>
     </div>
     {% if posts.paginator.num_pages > 1 %}
-    <nav class="flex justify-center gap-3 mt-6" aria-label="페이지 이동">
-        {% if posts.has_previous %}<a class="px-4 py-2 bg-white border rounded-lg" href="?page={{ posts.previous_page_number }}">이전</a>{% endif %}
+      <nav class="flex justify-center gap-3 mt-6" aria-label="페이지 이동">
+        {% if posts.has_previous %}<a class="px-4 py-2 bg-white border rounded-lg"
+   href="?page={{ posts.previous_page_number }}">이전</a>{% endif %}
         <span class="px-4 py-2 text-slate-500">{{ posts.number }} / {{ posts.paginator.num_pages }}</span>
-        {% if posts.has_next %}<a class="px-4 py-2 bg-white border rounded-lg" href="?page={{ posts.next_page_number }}">다음</a>{% endif %}
-    </nav>
+        {% if posts.has_next %}<a class="px-4 py-2 bg-white border rounded-lg"
+   href="?page={{ posts.next_page_number }}">다음</a>{% endif %}
+      </nav>
     {% endif %}
-</div>
+  </div>
 {% endblock %}

@@ -11,18 +11,42 @@ from django.urls import reverse
 
 from resumes.models import CoverLetter
 
-from .models import JobPost, Skill
-from .management.commands.seed_demo_data import SAMPLE_JOBS, SKILL_NAMES
 from .management.commands.fetch_worknet_jobs import (
-    Command,
     WORK24_JOB_DETAIL_API_URL,
+    Command,
     normalize_company_size,
+    skill_matches,
 )
+from .management.commands.seed_demo_data import SAMPLE_JOBS, SKILL_NAMES
+from .models import JobPost, Skill
 
 
 class JobViewSecurityTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user("user", password="test-password")
+
+    def test_company_analysis_page_requires_login(self):
+        response = self.client.get(reverse("jobs:company_analysis"))
+        self.assertRedirects(
+            response,
+            f"/accounts/login/?next={reverse('jobs:company_analysis')}",
+            fetch_redirect_response=False,
+        )
+
+    @override_settings(GMSKEY="test-key")
+    @patch("jobs.views.requests.post", side_effect=RuntimeError("sensitive upstream URL"))
+    @patch("jobs.views.fetch_real_news", return_value=[])
+    def test_company_analysis_hides_internal_exception(self, mocked_news, mocked_post):
+        self.client.force_login(self.user)
+        with self.assertLogs("jobs.views", level="ERROR"):
+            response = self.client.post(
+                reverse("jobs:ai_analyze_company"),
+                data=json.dumps({"company_name": "테스트 회사"}),
+                content_type="application/json",
+            )
+
+        self.assertEqual(response.status_code, 500)
+        self.assertNotIn("sensitive upstream URL", response.json()["message"])
 
     def test_ai_coverletter_does_not_create_fake_job(self):
         self.client.force_login(self.user)
@@ -69,6 +93,12 @@ class JobViewSecurityTests(TestCase):
         self.assertEqual(normalize_company_size("강소기업"), "중소기업")
         self.assertEqual(normalize_company_size(None), "무관")
 
+    def test_skill_matching_uses_token_boundaries(self):
+        self.assertTrue(skill_matches("Java 백엔드 개발", "Java"))
+        self.assertTrue(skill_matches("UI/UX 디자이너", "UI/UX"))
+        self.assertFalse(skill_matches("JavaScript 개발", "Java"))
+        self.assertFalse(skill_matches("digital marketing guide", "Git"))
+
     def test_empty_work24_error_message_is_handled(self):
         root = ET.fromstring("<root><message /></root>")
         with self.assertRaisesMessage(CommandError, "알 수 없는 API 오류"):
@@ -102,14 +132,12 @@ class JobViewSecurityTests(TestCase):
             description="이전 설명",
             company_size="무관",
         )
-        mocked_get.return_value = Mock(
-            text="""
+        mocked_get.return_value = Mock(text="""
                 <wantedRoot><wanted>
                     <wantedAuthNo>wanted-123</wantedAuthNo>
                     <company>기존 회사</company><title>기존 공고</title>
                 </wanted></wantedRoot>
-            """
-        )
+            """)
         call_command("fetch_worknet_jobs", stdout=io.StringIO())
         self.assertEqual(mocked_get.call_count, 1)
         job = JobPost.objects.get(company_name="기존 회사", title="기존 공고")
@@ -129,12 +157,8 @@ class DemoDataCommandTests(TestCase):
         self.assertEqual(first_skill_count, len(SKILL_NAMES))
         self.assertEqual(JobPost.objects.count(), first_job_count)
         self.assertEqual(Skill.objects.count(), first_skill_count)
-        self.assertFalse(
-            JobPost.objects.exclude(source=JobPost.Source.SAMPLE).exists()
-        )
-        self.assertTrue(
-            JobPost.objects.filter(description__startswith="[샘플 공고]").exists()
-        )
+        self.assertFalse(JobPost.objects.exclude(source=JobPost.Source.SAMPLE).exists())
+        self.assertTrue(JobPost.objects.filter(description__startswith="[샘플 공고]").exists())
 
     def test_clear_removes_only_sample_jobs(self):
         call_command("seed_demo_data", stdout=io.StringIO())
@@ -146,7 +170,5 @@ class DemoDataCommandTests(TestCase):
 
         call_command("seed_demo_data", clear=True, stdout=io.StringIO())
 
-        self.assertFalse(
-            JobPost.objects.filter(source=JobPost.Source.SAMPLE).exists()
-        )
+        self.assertFalse(JobPost.objects.filter(source=JobPost.Source.SAMPLE).exists())
         self.assertTrue(JobPost.objects.filter(pk=manual_job.pk).exists())

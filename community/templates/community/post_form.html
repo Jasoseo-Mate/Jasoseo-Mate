@@ -1,45 +1,51 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}{{ title }} - 자소서 메이트{% endblock %}
-
 {% block content %}
-<div class="max-w-3xl mx-auto px-6 py-10">
+  <div class="max-w-3xl mx-auto px-6 py-10">
     <div class="mb-8">
-        <a href="javascript:history.back()" class="text-sm font-bold text-slate-500 hover:text-blue-600 flex items-center gap-1 transition-colors w-fit mb-4">
-            <span class="material-symbols-outlined text-sm">arrow_back</span> 뒤로가기
-        </a>
-        <h1 class="text-3xl font-extrabold text-slate-800">{{ title }}</h1>
+      <a href="{% url 'community:post_list' %}"
+         class="text-sm font-bold text-slate-500 hover:text-blue-600 flex items-center gap-1 transition-colors w-fit mb-4">
+        <span class="material-symbols-outlined text-sm">arrow_back</span> 뒤로가기
+      </a>
+      <h1 class="text-3xl font-extrabold text-slate-800">{{ title }}</h1>
     </div>
-
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-        <form method="POST">
-            {% csrf_token %}
-            
-            <div class="mb-6">
-                <label for="{{ form.title.id_for_label }}" class="block text-sm font-bold text-slate-700 mb-2">제목</label>
-                <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:'' }}" 
-                       class="w-full rounded-xl border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all text-sm p-3 font-medium" 
-                       placeholder="제목을 입력하세요 (예: 면접 꿀팁 공유합니다!)" required>
-                {% if form.title.errors %}
-                <p class="text-red-500 text-xs font-bold mt-1">{{ form.title.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <div class="mb-8">
-                <label for="{{ form.content.id_for_label }}" class="block text-sm font-bold text-slate-700 mb-2">내용</label>
-                <textarea name="{{ form.content.name }}" id="{{ form.content.id_for_label }}" rows="15" 
-                          class="w-full rounded-xl border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all text-sm p-4 font-medium resize-none" 
-                          placeholder="자유롭게 취업 고민이나 정보를 나누어보세요!" required>{{ form.content.value|default:'' }}</textarea>
-                {% if form.content.errors %}
-                <p class="text-red-500 text-xs font-bold mt-1">{{ form.content.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <div class="flex justify-end gap-3">
-                <a href="javascript:history.back()" class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">취소</a>
-                <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-sm">저장하기</button>
-            </div>
-        </form>
+      <form method="post">
+        {% csrf_token %}
+        <div class="mb-6">
+          <label for="{{ form.title.id_for_label }}"
+                 class="block text-sm font-bold text-slate-700 mb-2">제목</label>
+          <input type="text"
+                 name="{{ form.title.name }}"
+                 id="{{ form.title.id_for_label }}"
+                 value="{{ form.title.value|default:'' }}"
+                 class="w-full rounded-xl border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all text-sm p-3 font-medium"
+                 placeholder="제목을 입력하세요 (예: 면접 꿀팁 공유합니다!)"
+                 required>
+          {% if form.title.errors %}
+            <p class="text-red-500 text-xs font-bold mt-1">{{ form.title.errors.0 }}</p>
+          {% endif %}
+        </div>
+        <div class="mb-8">
+          <label for="{{ form.content.id_for_label }}"
+                 class="block text-sm font-bold text-slate-700 mb-2">내용</label>
+          <textarea name="{{ form.content.name }}"
+                    id="{{ form.content.id_for_label }}"
+                    rows="15"
+                    class="w-full rounded-xl border-slate-200 focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all text-sm p-4 font-medium resize-none"
+                    placeholder="자유롭게 취업 고민이나 정보를 나누어보세요!"
+                    required>{{ form.content.value|default:'' }}</textarea>
+          {% if form.content.errors %}
+            <p class="text-red-500 text-xs font-bold mt-1">{{ form.content.errors.0 }}</p>
+          {% endif %}
+        </div>
+        <div class="flex justify-end gap-3">
+          <a href="{% url 'community:post_list' %}"
+             class="px-6 py-3 bg-slate-100 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-200 transition-colors">취소</a>
+          <button type="submit"
+                  class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-sm">저장하기</button>
+        </div>
+      </form>
     </div>
-</div>
+  </div>
 {% endblock %}

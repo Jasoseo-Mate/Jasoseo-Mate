@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Profile, Education, Certificate, Activity, Project
+
+from .models import Activity, Certificate, Education, Profile, Project
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -10,7 +11,7 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ("username", "email")
 
     def __init__(self, *args, **kwargs):
-        super(CustomUserCreationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields["username"].help_text = "사용자 이름을 입력해주세요."
         self.fields["email"].help_text = "연락 가능한 이메일 주소를 입력해주세요."
         self.fields["password1"].help_text = "비밀번호는 최소 8자 이상이어야 합니다."
@@ -45,7 +46,7 @@ class EducationForm(forms.ModelForm):
 
     class Meta:
         model = Education
-        exclude = ["user"]
+        fields = ["school_name", "major", "degree", "start_date", "end_date"]
 
 
 class CertificateForm(forms.ModelForm):
@@ -56,7 +57,7 @@ class CertificateForm(forms.ModelForm):
 
     class Meta:
         model = Certificate
-        exclude = ["user"]
+        fields = ["name", "issuer", "date_acquired"]
 
 
 class ActivityForm(forms.ModelForm):
@@ -72,7 +73,7 @@ class ActivityForm(forms.ModelForm):
 
     class Meta:
         model = Activity
-        exclude = ["user"]
+        fields = ["title", "description", "start_date", "end_date"]
 
 
 class ProjectForm(forms.ModelForm):
@@ -88,4 +89,4 @@ class ProjectForm(forms.ModelForm):
 
     class Meta:
         model = Project
-        exclude = ["user"]
+        fields = ["title", "description", "start_date", "end_date", "url"]

@@ -1,116 +1,110 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}기업 분석 - 자소서 메이트{% endblock %}
-
 {% block content %}
-<div class="max-w-6xl mx-auto px-6 py-10">
-
+  <div class="max-w-6xl mx-auto px-6 py-10">
     <!-- Hero Section -->
     <div class="relative overflow-hidden bg-gradient-to-br from-green-600 via-teal-700 to-slate-900 rounded-3xl p-10 md:p-14 shadow-lg mb-10 text-white animate-fade-in">
-        <div class="relative z-10 max-w-3xl">
-            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white/20 text-green-100 mb-6 backdrop-blur-md border border-white/10">
-                <span class="text-base">📈</span> 실시간 웹 스크래핑 & AI 분석
-            </span>
-            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-5 leading-tight">
-                딥러닝 기업 심층 분석
-            </h1>
-            <p class="text-lg md:text-xl text-green-100/90 leading-relaxed font-medium mb-8">
-                지원하려는 회사의 비전, 인재상, 최근 뉴스 기반의 핵심 이슈를 클릭 한 번에 정리하여 면접 프리패스 공략집을 만들어 드립니다.
-            </p>
-            
-            <div class="flex gap-2 max-w-xl">
-                <input type="text" id="company-input" class="flex-1 w-full px-5 py-4 rounded-2xl border-none focus:ring-4 focus:ring-green-400/30 outline-none text-slate-800 font-medium text-lg placeholder-slate-400 shadow-inner" placeholder="분석할 기업명을 입력하세요 (예: 토스)">
-                <button id="analyze-btn" class="px-8 py-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-2xl transition-all shadow-lg active:scale-95 flex items-center gap-2 whitespace-nowrap">
-                    <span class="text-xl">🔍</span> 분석하기
-                </button>
-            </div>
-        </div>
-        <!-- 꾸미기 효과 -->
-        <div class="absolute right-0 top-0 w-96 h-96 bg-green-400/20 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
-    </div>
-
-    <!-- Loading Spinner -->
-    <div id="loading-spinner" class="hidden flex flex-col items-center justify-center p-24 bg-white border border-slate-200 rounded-3xl text-center">
-        <div class="relative w-28 h-28 mb-8">
-            <div class="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
-            <div class="absolute inset-0 border-4 border-transparent border-t-green-500 rounded-full animate-spin"></div>
-            <div class="absolute inset-0 flex items-center justify-center text-5xl animate-pulse">
-                📰
-            </div>
-        </div>
-        <h3 class="text-2xl font-extrabold text-slate-800 mb-3">기업의 최신 트렌드를 스크래핑 중입니다...</h3>
-        <p class="text-slate-500 font-medium max-w-md text-base">
-            인터넷 기사와 각종 정보를 취합하여 AI가 핵심만 요약하고 있습니다.<br>잠시만 기다려 주세요.
+      <div class="relative z-10 max-w-3xl">
+        <span class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white/20 text-green-100 mb-6 backdrop-blur-md border border-white/10">
+          <span class="text-base">📈</span> 실시간 웹 스크래핑 & AI 분석
+        </span>
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-5 leading-tight">딥러닝 기업 심층 분석</h1>
+        <p class="text-lg md:text-xl text-green-100/90 leading-relaxed font-medium mb-8">
+          지원하려는 회사의 비전, 인재상, 최근 뉴스 기반의 핵심 이슈를 클릭 한 번에 정리하여 면접 프리패스 공략집을 만들어 드립니다.
         </p>
+        <div class="flex gap-2 max-w-xl">
+          <input type="text"
+                 id="company-input"
+                 class="flex-1 w-full px-5 py-4 rounded-2xl border-none focus:ring-4 focus:ring-green-400/30 outline-none text-slate-800 font-medium text-lg placeholder-slate-400 shadow-inner"
+                 placeholder="분석할 기업명을 입력하세요 (예: 토스)">
+          <button type="button"
+                  id="analyze-btn"
+                  class="px-8 py-4 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-2xl transition-all shadow-lg active:scale-95 flex items-center gap-2 whitespace-nowrap">
+            <span class="text-xl">🔍</span> 분석하기
+          </button>
+        </div>
+      </div>
+      <!-- 꾸미기 효과 -->
+      <div class="absolute right-0 top-0 w-96 h-96 bg-green-400/20 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20">
+      </div>
     </div>
-
+    <!-- Loading Spinner -->
+    <div id="loading-spinner"
+         class="hidden flex flex-col items-center justify-center p-24 bg-white border border-slate-200 rounded-3xl text-center">
+      <div class="relative w-28 h-28 mb-8">
+        <div class="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+        <div class="absolute inset-0 border-4 border-transparent border-t-green-500 rounded-full animate-spin"></div>
+        <div class="absolute inset-0 flex items-center justify-center text-5xl animate-pulse">📰</div>
+      </div>
+      <h3 class="text-2xl font-extrabold text-slate-800 mb-3">기업의 최신 트렌드를 스크래핑 중입니다...</h3>
+      <p class="text-slate-500 font-medium max-w-md text-base">
+        인터넷 기사와 각종 정보를 취합하여 AI가 핵심만 요약하고 있습니다.
+        <br>
+        잠시만 기다려 주세요.
+      </p>
+    </div>
     <!-- Result Container -->
     <div id="result-container" class="hidden space-y-8 animate-fade-in">
-        
-        <!-- Vision -->
-        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all group relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-2 bg-blue-500"></div>
-            <h2 class="text-2xl font-extrabold text-slate-800 mb-4 flex items-center gap-3">
-                <span class="p-2 bg-blue-50 text-blue-600 rounded-xl text-2xl">🎯</span> 회사의 비전 및 미션
-            </h2>
-            <p id="res-vision" class="text-slate-600 leading-relaxed text-lg bg-slate-50 p-6 rounded-2xl font-medium border border-slate-100 group-hover:bg-blue-50/50 transition-colors"></p>
+      <!-- Vision -->
+      <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 hover:border-blue-300 hover:shadow-lg transition-all group relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-blue-500"></div>
+        <h2 class="text-2xl font-extrabold text-slate-800 mb-4 flex items-center gap-3">
+          <span class="p-2 bg-blue-50 text-blue-600 rounded-xl text-2xl">🎯</span> 회사의 비전 및 미션
+        </h2>
+        <p id="res-vision"
+           class="text-slate-600 leading-relaxed text-lg bg-slate-50 p-6 rounded-2xl font-medium border border-slate-100 group-hover:bg-blue-50/50 transition-colors">
+        </p>
+      </div>
+      <!-- Ideal Candidate -->
+      <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 hover:border-green-300 hover:shadow-lg transition-all group relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-green-500"></div>
+        <h2 class="text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
+          <span class="p-2 bg-green-50 text-green-600 rounded-xl text-2xl">👤</span> 회사가 원하는 인재상
+        </h2>
+        <div id="res-ideal"
+             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Javascript will populate here -->
         </div>
-
-        <!-- Ideal Candidate -->
-        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 hover:border-green-300 hover:shadow-lg transition-all group relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-2 bg-green-500"></div>
-            <h2 class="text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
-                <span class="p-2 bg-green-50 text-green-600 rounded-xl text-2xl">👤</span> 회사가 원하는 인재상
-            </h2>
-            <div id="res-ideal" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Javascript will populate here -->
-            </div>
+      </div>
+      <!-- Recent Issues -->
+      <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 hover:border-orange-300 hover:shadow-lg transition-all group relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-orange-500"></div>
+        <h2 class="text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
+          <span class="p-2 bg-orange-50 text-orange-600 rounded-xl text-2xl">🔥</span> 최근 기업 핵심 이슈
+        </h2>
+        <ul id="res-issues" class="space-y-4 list-none">
+          <!-- Javascript will populate here -->
+        </ul>
+      </div>
+      <!-- Recommended Articles -->
+      <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 hover:border-rose-300 hover:shadow-lg transition-all group relative overflow-hidden">
+        <div class="absolute left-0 top-0 bottom-0 w-2 bg-rose-500"></div>
+        <h2 class="text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
+          <span class="p-2 bg-rose-50 text-rose-600 rounded-xl text-2xl">📚</span> 면접 전 필독! 추천 아티클
+        </h2>
+        <div id="res-articles" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <!-- Javascript will populate here -->
         </div>
-
-        <!-- Recent Issues -->
-        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 hover:border-orange-300 hover:shadow-lg transition-all group relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-2 bg-orange-500"></div>
-            <h2 class="text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
-                <span class="p-2 bg-orange-50 text-orange-600 rounded-xl text-2xl">🔥</span> 최근 기업 핵심 이슈
-            </h2>
-            <ul id="res-issues" class="space-y-4 list-none">
-                <!-- Javascript will populate here -->
-            </ul>
-        </div>
-
-        <!-- Recommended Articles -->
-        <div class="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200 hover:border-rose-300 hover:shadow-lg transition-all group relative overflow-hidden">
-            <div class="absolute left-0 top-0 bottom-0 w-2 bg-rose-500"></div>
-            <h2 class="text-2xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
-                <span class="p-2 bg-rose-50 text-rose-600 rounded-xl text-2xl">📚</span> 면접 전 필독! 추천 아티클
-            </h2>
-            <div id="res-articles" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <!-- Javascript will populate here -->
-            </div>
-        </div>
-
-        <!-- Interview Tip -->
-        <div class="bg-gradient-to-br from-indigo-600 to-purple-800 p-8 md:p-10 rounded-3xl shadow-lg text-white hover:shadow-xl transition-all relative overflow-hidden">
-            <div class="absolute right-0 top-0 opacity-10 text-9xl -mt-4 -mr-4 pointer-events-none">💡</div>
-            <h2 class="text-2xl font-extrabold mb-5 flex items-center gap-3 relative z-10">
-                <span class="p-2 bg-white/20 text-white rounded-xl text-2xl backdrop-blur-sm border border-white/10">💡</span> 면접 프리패스 핵심 꿀팁
-            </h2>
-            <p id="res-tip" class="text-indigo-50 text-lg leading-relaxed font-bold relative z-10"></p>
-        </div>
-
+      </div>
+      <!-- Interview Tip -->
+      <div class="bg-gradient-to-br from-indigo-600 to-purple-800 p-8 md:p-10 rounded-3xl shadow-lg text-white hover:shadow-xl transition-all relative overflow-hidden">
+        <div class="absolute right-0 top-0 opacity-10 text-9xl -mt-4 -mr-4 pointer-events-none">💡</div>
+        <h2 class="text-2xl font-extrabold mb-5 flex items-center gap-3 relative z-10">
+          <span class="p-2 bg-white/20 text-white rounded-xl text-2xl backdrop-blur-sm border border-white/10">💡</span> 면접 프리패스 핵심 꿀팁
+        </h2>
+        <p id="res-tip"
+           class="text-indigo-50 text-lg leading-relaxed font-bold relative z-10"></p>
+      </div>
     </div>
-
-</div>
-
-<style>
+  </div>
+  <style>
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(12px); }
         to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-</style>
-
-<script>
+  </style>
+  <script>
 document.addEventListener('DOMContentLoaded', function() {
     const analyzeBtn = document.getElementById('analyze-btn');
     const companyInput = document.getElementById('company-input');
@@ -275,5 +269,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-</script>
+  </script>
 {% endblock %}

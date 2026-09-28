@@ -31,9 +31,7 @@ class Migration(migrations.Migration):
                 ("language_score", models.IntegerField(default=0)),
                 (
                     "skills",
-                    models.ManyToManyField(
-                        related_name="users_with_skill", to="jobs.skill"
-                    ),
+                    models.ManyToManyField(related_name="users_with_skill", to="jobs.skill"),
                 ),
                 (
                     "user",

@@ -118,6 +118,15 @@ py -3.12 -m venv venv
 pip install -r requirements.txt
 ```
 
+코드 포맷과 정적 검사를 함께 실행하려면 개발용 의존성을 설치합니다.
+
+```bash
+pip install -r requirements-dev.txt
+ruff check .
+black --check .
+djlint --check templates accounts/templates community/templates jobs/templates resumes/templates
+```
+
 `.env.example`을 `.env`로 복사하고 필요한 API 키를 설정합니다.
 
 ```dotenv
@@ -152,7 +161,17 @@ python manage.py fetch_worknet_jobs
 
 ## 운영 전 확인
 
+운영용 비밀 키는 저장소의 예시 값을 복사하지 말고 다음 명령으로 새로 생성해 `DJANGO_SECRET_KEY`에 설정합니다.
+
+```bash
+python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+운영에서는 `DJANGO_DEBUG=False`, 실제 호스트를 `DJANGO_ALLOWED_HOSTS`에 설정하고 배포 전에 `python manage.py collectstatic --noinput`을 실행합니다. 리버스 프록시가 `X-Forwarded-Proto`를 올바르게 덮어쓰는 환경에서만 `DJANGO_TRUST_PROXY_HEADERS=True`를 사용하고, 서비스의 HTTPS origin을 `DJANGO_CSRF_TRUSTED_ORIGINS`에 쉼표로 구분해 지정합니다. HTTPS 보안 쿠키, 리다이렉트와 HSTS는 DEBUG가 꺼지면 자동 활성화됩니다.
+
 운영 환경에서 이메일 백엔드를 SMTP로 변경한다면 `DJANGO_EMAIL_HOST`, `DJANGO_EMAIL_PORT`, `DJANGO_EMAIL_HOST_USER`, `DJANGO_EMAIL_HOST_PASSWORD`, `DJANGO_EMAIL_USE_TLS`, `DJANGO_DEFAULT_FROM_EMAIL`도 함께 설정해야 합니다. `ACCOUNT_EMAIL_VERIFICATION`의 기본값은 `optional`이므로 비밀번호 재설정과 이메일 인증 과정에서 실제 메일이 발송됩니다.
+
+현재 UI는 별도 Node.js 빌드 과정 없이 실행할 수 있도록 Tailwind CDN을 사용합니다. 정식 대규모 운영 전에는 Tailwind CLI 빌드 결과를 정적 파일로 전환하는 것을 권장합니다.
 
 ## 테스트
 

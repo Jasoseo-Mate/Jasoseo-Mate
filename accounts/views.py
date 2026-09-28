@@ -1,4 +1,5 @@
 import json
+import logging
 
 import requests
 from django.conf import settings  # settings 임포트
@@ -15,15 +16,17 @@ from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from jobs.models import Skill
 
-from .models import Profile, Education, Certificate, Activity, Project
 from .forms import (
-    CustomUserCreationForm,
-    ProfileForm,
-    EducationForm,
-    CertificateForm,
     ActivityForm,
+    CertificateForm,
+    CustomUserCreationForm,
+    EducationForm,
+    ProfileForm,
     ProjectForm,
 )
+from .models import Activity, Certificate, Education, Profile, Project
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -236,9 +239,7 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     # settings.LOGOUT_REDIRECT_URL로 리디렉션
-    return redirect(
-        settings.LOGOUT_REDIRECT_URL
-    )  # settings.LOGOUT_REDIRECT_URL로 리디렉션
+    return redirect(settings.LOGOUT_REDIRECT_URL)  # settings.LOGOUT_REDIRECT_URL로 리디렉션
 
 
 def user_signup(request):
@@ -265,20 +266,14 @@ def ai_recommend_skills(request):
     gmskey = settings.GMSKEY
 
     if not gmskey:
-        return JsonResponse(
-            {"status": "error", "message": "GMSKEY 설정이 없습니다."}, status=400
-        )
+        return JsonResponse({"status": "error", "message": "GMSKEY 설정이 없습니다."}, status=400)
 
     # 사용자 스펙 수집
     educations = "\n".join(
         [f"- {e.school_name} {e.major} ({e.degree})" for e in user.educations.all()]
     )
-    certificates = "\n".join(
-        [f"- {c.name} ({c.issuer})" for c in user.certificates.all()]
-    )
-    activities = "\n".join(
-        [f"- {a.title}: {a.description}" for a in user.activities.all()]
-    )
+    certificates = "\n".join([f"- {c.name} ({c.issuer})" for c in user.certificates.all()])
+    activities = "\n".join([f"- {a.title}: {a.description}" for a in user.activities.all()])
     projects = "\n".join([f"- {p.title}: {p.description}" for p in user.projects.all()])
 
     if not any([educations, certificates, activities, projects]):
@@ -335,8 +330,13 @@ def ai_recommend_skills(request):
         parsed_data = json.loads(candidate_text.strip())
         recommended_ids = parsed_data.get("ids", [])
 
+        return JsonResponse({"status": "success", "recommended_skill_ids": recommended_ids})
+    except Exception:
+        logger.exception("AI 역량 추천 처리 중 오류가 발생했습니다.")
         return JsonResponse(
-            {"status": "success", "recommended_skill_ids": recommended_ids}
+            {
+                "status": "error",
+                "message": "역량 추천 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+            },
+            status=500,
         )
-    except Exception as e:
-        return JsonResponse({"status": "error", "message": str(e)}, status=500)

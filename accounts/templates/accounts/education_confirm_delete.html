@@ -1,22 +1,17 @@
-{% extends 'base.html' %}
-
+{% extends "base.html" %}
 {% block title %}학력 정보 삭제 - 자소서 메이트{% endblock %}
-
 {% block content %}
-<div class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
+  <div class="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
     <h1 class="text-2xl font-bold text-gray-800 mb-6">학력 정보 삭제</h1>
     <p class="mb-4">"{{ object.school_name }}" 학력 정보를 정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
     <form method="post" class="space-y-4">
-        {% csrf_token %}
-        <div class="flex justify-end space-x-4">
-            <a href="{% url 'accounts:profile_dashboard' %}" class="px-4 py-2 bg-gray-200 text-gray-800 font-medium rounded-md hover:bg-gray-300">
-                취소
-            </a>
-            <button type="submit"
-                    class="px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700">
-                삭제
-            </button>
-        </div>
+      {% csrf_token %}
+      <div class="flex justify-end space-x-4">
+        <a href="{% url 'accounts:profile_dashboard' %}"
+           class="px-4 py-2 bg-gray-200 text-gray-800 font-medium rounded-md hover:bg-gray-300">취소</a>
+        <button type="submit"
+                class="px-4 py-2 bg-red-600 text-white font-medium rounded-md hover:bg-red-700">삭제</button>
+      </div>
     </form>
-</div>
+  </div>
 {% endblock %}
