@@ -159,21 +159,21 @@ python manage.py seed_demo_data --clear
 python manage.py fetch_worknet_jobs
 ```
 
-## 운영 전 확인
+## 외부 서버 실행 시 참고
 
-운영용 비밀 키는 저장소의 예시 값을 복사하지 말고 다음 명령으로 새로 생성해 `DJANGO_SECRET_KEY`에 설정합니다.
+별도 서버에서 실행할 때 사용할 비밀 키는 저장소의 예시 값을 복사하지 말고 다음 명령으로 새로 생성해 `DJANGO_SECRET_KEY`에 설정합니다.
 
 ```bash
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-운영에서는 `DJANGO_DEBUG=False`, 실제 호스트를 `DJANGO_ALLOWED_HOSTS`에 설정하고 배포 전에 `python manage.py collectstatic --noinput`을 실행합니다. 리버스 프록시가 `X-Forwarded-Proto`를 올바르게 덮어쓰는 환경에서만 `DJANGO_TRUST_PROXY_HEADERS=True`를 사용하고, 서비스의 HTTPS origin을 `DJANGO_CSRF_TRUSTED_ORIGINS`에 쉼표로 구분해 지정합니다. HTTPS 보안 쿠키, 리다이렉트와 HSTS는 DEBUG가 꺼지면 자동 활성화됩니다. HSTS는 기본 1시간으로 시작하며 HTTPS 구성을 충분히 검증한 뒤 점진적으로 늘리세요. 서브도메인 포함과 preload는 각각 `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_SECURE_HSTS_PRELOAD`로 명시적으로 활성화해야 합니다.
+로컬에서 다시 개발하거나 기능을 확인할 때는 기본 개발 설정으로 충분합니다. 개인적으로 별도 서버에 올려 확인하는 경우에는 `DJANGO_DEBUG=False`, 실제 호스트를 `DJANGO_ALLOWED_HOSTS`에 설정하고 `python manage.py collectstatic --noinput`을 실행합니다. 리버스 프록시가 `X-Forwarded-Proto`를 올바르게 덮어쓰는 환경에서만 `DJANGO_TRUST_PROXY_HEADERS=True`를 사용하고, 서버의 HTTPS origin을 `DJANGO_CSRF_TRUSTED_ORIGINS`에 쉼표로 구분해 지정합니다. HTTPS 보안 쿠키, 리다이렉트와 HSTS는 DEBUG가 꺼지면 자동 활성화됩니다. HSTS는 기본 1시간이며, 장기간 공개 서버를 운영할 때만 충분한 검증 후 값을 늘리세요. 서브도메인 포함과 preload는 각각 `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_SECURE_HSTS_PRELOAD`로 명시적으로 활성화해야 합니다.
 
 AI API는 전체 엔드포인트를 합산해 사용자당 1분에 5회로 제한됩니다. `AI_RATE_LIMIT`과 `AI_RATE_LIMIT_WINDOW`로 조정할 수 있으며, 여러 서버 인스턴스를 운영한다면 Django 기본 캐시 대신 Redis처럼 모든 인스턴스가 공유하는 캐시 백엔드를 설정해야 합니다.
 
-운영 환경에서 이메일 백엔드를 SMTP로 변경한다면 `DJANGO_EMAIL_HOST`, `DJANGO_EMAIL_PORT`, `DJANGO_EMAIL_HOST_USER`, `DJANGO_EMAIL_HOST_PASSWORD`, `DJANGO_EMAIL_USE_TLS`, `DJANGO_DEFAULT_FROM_EMAIL`도 함께 설정해야 합니다. `ACCOUNT_EMAIL_VERIFICATION`의 기본값은 `optional`이므로 비밀번호 재설정과 이메일 인증 과정에서 실제 메일이 발송됩니다.
+이메일 발송 기능을 실제 SMTP로 시험한다면 `DJANGO_EMAIL_HOST`, `DJANGO_EMAIL_PORT`, `DJANGO_EMAIL_HOST_USER`, `DJANGO_EMAIL_HOST_PASSWORD`, `DJANGO_EMAIL_USE_TLS`, `DJANGO_DEFAULT_FROM_EMAIL`도 함께 설정해야 합니다. `ACCOUNT_EMAIL_VERIFICATION`의 기본값은 `optional`이므로 비밀번호 재설정과 이메일 인증 과정에서 실제 메일이 발송됩니다.
 
-현재 UI는 별도 Node.js 빌드 과정 없이 실행할 수 있도록 Tailwind CDN을 사용합니다. 정식 대규모 운영 전에는 Tailwind CLI 빌드 결과를 정적 파일로 전환하는 것을 권장합니다.
+현재 UI는 별도 Node.js 빌드 과정 없이 간단히 실행할 수 있도록 Tailwind CDN을 사용합니다. 프로젝트를 장기간 공개하거나 프런트엔드 빌드 과정을 확장할 때는 Tailwind CLI 빌드 결과를 정적 파일로 전환할 수 있습니다.
 
 ## 테스트
 
@@ -185,4 +185,4 @@ python manage.py test
 
 ## 프로젝트 상태
 
-현재 버전은 로컬 개발과 기능 시연을 위한 Django 기반 웹 애플리케이션입니다. 운영 배포 시에는 운영용 데이터베이스, 정적 파일 빌드, HTTPS와 배포 서버 구성이 추가로 필요합니다.
+자소서 메이트는 SSAFY 과정에서 개발과 결과 발표를 마친 프로젝트입니다. 현재는 당시 결과물을 바탕으로 개인적으로 유지보수하고 새로운 기능을 더하고 있습니다. 별도 서버에서 실행할 경우에는 해당 환경에 맞는 데이터베이스, 정적 파일 수집, HTTPS와 서버 구성이 추가로 필요합니다.
