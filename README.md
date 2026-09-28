@@ -167,7 +167,9 @@ python manage.py fetch_worknet_jobs
 python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-운영에서는 `DJANGO_DEBUG=False`, 실제 호스트를 `DJANGO_ALLOWED_HOSTS`에 설정하고 배포 전에 `python manage.py collectstatic --noinput`을 실행합니다. 리버스 프록시가 `X-Forwarded-Proto`를 올바르게 덮어쓰는 환경에서만 `DJANGO_TRUST_PROXY_HEADERS=True`를 사용하고, 서비스의 HTTPS origin을 `DJANGO_CSRF_TRUSTED_ORIGINS`에 쉼표로 구분해 지정합니다. HTTPS 보안 쿠키, 리다이렉트와 HSTS는 DEBUG가 꺼지면 자동 활성화됩니다.
+운영에서는 `DJANGO_DEBUG=False`, 실제 호스트를 `DJANGO_ALLOWED_HOSTS`에 설정하고 배포 전에 `python manage.py collectstatic --noinput`을 실행합니다. 리버스 프록시가 `X-Forwarded-Proto`를 올바르게 덮어쓰는 환경에서만 `DJANGO_TRUST_PROXY_HEADERS=True`를 사용하고, 서비스의 HTTPS origin을 `DJANGO_CSRF_TRUSTED_ORIGINS`에 쉼표로 구분해 지정합니다. HTTPS 보안 쿠키, 리다이렉트와 HSTS는 DEBUG가 꺼지면 자동 활성화됩니다. HSTS는 기본 1시간으로 시작하며 HTTPS 구성을 충분히 검증한 뒤 점진적으로 늘리세요. 서브도메인 포함과 preload는 각각 `DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS`, `DJANGO_SECURE_HSTS_PRELOAD`로 명시적으로 활성화해야 합니다.
+
+AI API는 전체 엔드포인트를 합산해 사용자당 1분에 5회로 제한됩니다. `AI_RATE_LIMIT`과 `AI_RATE_LIMIT_WINDOW`로 조정할 수 있으며, 여러 서버 인스턴스를 운영한다면 Django 기본 캐시 대신 Redis처럼 모든 인스턴스가 공유하는 캐시 백엔드를 설정해야 합니다.
 
 운영 환경에서 이메일 백엔드를 SMTP로 변경한다면 `DJANGO_EMAIL_HOST`, `DJANGO_EMAIL_PORT`, `DJANGO_EMAIL_HOST_USER`, `DJANGO_EMAIL_HOST_PASSWORD`, `DJANGO_EMAIL_USE_TLS`, `DJANGO_DEFAULT_FROM_EMAIL`도 함께 설정해야 합니다. `ACCOUNT_EMAIL_VERIFICATION`의 기본값은 `optional`이므로 비밀번호 재설정과 이메일 인증 과정에서 실제 메일이 발송됩니다.
 

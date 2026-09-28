@@ -53,6 +53,8 @@ ALLOWED_HOSTS = [
 
 GMSKEY = os.environ.get("GMSKEY")
 WORKNET_API_KEY = os.environ.get("WORKNET_API_KEY")
+AI_RATE_LIMIT = int(os.environ.get("AI_RATE_LIMIT", "5"))
+AI_RATE_LIMIT_WINDOW = int(os.environ.get("AI_RATE_LIMIT_WINDOW", "60"))
 
 
 # Application definition
@@ -230,9 +232,15 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_SSL_REDIRECT = True
-    SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_SECURE_HSTS_SECONDS", "31536000"))
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_SECURE_HSTS_SECONDS", "3600"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = os.environ.get(
+        "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", "True"
+    ).lower() in {"1", "true", "yes"}
+    SECURE_HSTS_PRELOAD = os.environ.get("DJANGO_SECURE_HSTS_PRELOAD", "False").lower() in {
+        "1",
+        "true",
+        "yes",
+    }
     if os.environ.get("DJANGO_TRUST_PROXY_HEADERS", "False").lower() in {
         "1",
         "true",

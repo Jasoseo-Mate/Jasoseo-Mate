@@ -14,6 +14,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.http import require_POST
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
+from jasoseo_mate.rate_limits import ai_rate_limit
 from jobs.models import Skill
 
 from .forms import (
@@ -257,6 +258,7 @@ def user_signup(request):
 
 @login_required
 @require_POST
+@ai_rate_limit
 def ai_recommend_skills(request):
     """
     사용자의 학력, 대외활동, 자격증, 프로젝트 스펙을 바탕으로

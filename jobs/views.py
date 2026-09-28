@@ -13,6 +13,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 
 from accounts.models import Profile
+from jasoseo_mate.rate_limits import ai_rate_limit
 from resumes.models import CoverLetter
 
 from .models import JobPost
@@ -52,6 +53,7 @@ def fetch_real_news(keyword, max_count=3):
 
 @login_required
 @require_POST
+@ai_rate_limit
 def ai_analyze_company(request):
     gmskey = settings.GMSKEY
     if not gmskey:
@@ -250,6 +252,7 @@ def ai_matching(request):
 
 @login_required
 @require_POST
+@ai_rate_limit
 def ai_analyze_spec(request):
     """
     사용자의 전체 스펙 정보를 수집하여 SSAFY GMS API (gpt-5.4-nano)를 통해 분석 및 최적 기업을 추천받습니다.
@@ -410,6 +413,7 @@ def ai_analyze_spec(request):
 
 @login_required
 @require_POST
+@ai_rate_limit
 def ai_generate_coverletter(request):
     """
     선택된 기업, 직무, 질문 문항과 구직자의 스펙을 조합하여 SSAFY GMS API (gpt-5.4-nano)로 완성도 높은 자소서 초안을 만듭니다.

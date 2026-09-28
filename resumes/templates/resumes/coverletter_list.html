@@ -3,9 +3,7 @@
 {% block content %}
   <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
     <h1 class="text-2xl font-bold text-slate-800 mb-6">내 자기소개서 목록</h1>
-    {# 자기소개서 생성은 특정 job_post_pk를 필요로 하므로, 여기서 직접 생성 버튼을 제공하기 어렵습니다. #}
-    {# 대신, JobPost 상세 페이지 등에서 "자기소개서 작성" 버튼을 통해 연결되어야 합니다. #}
-    <p class="text-slate-600 mb-4">자기소개서는 특정 채용 공고에 연결하여 작성할 수 있습니다.</p>
+    <p class="text-slate-600 mb-4">AI로 생성하거나 채용 공고를 바탕으로 작성한 자기소개서를 한곳에서 관리할 수 있습니다.</p>
     {% if coverletters %}
       <div class="space-y-4">
         {% for coverletter in coverletters %}
@@ -26,7 +24,7 @@
         {% endfor %}
       </div>
     {% else %}
-      <p class="text-slate-600">작성된 자기소개서가 없습니다. 관심 있는 채용 공고를 찾아 자기소개서를 작성해보세요!</p>
+      <p class="text-slate-600">작성된 자기소개서가 없습니다. AI 자기소개서 생성에서 첫 초안을 만들어보세요!</p>
     {% endif %}
   </div>
 {% endblock %}

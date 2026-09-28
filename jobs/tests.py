@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from unittest.mock import Mock, patch
 
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase, override_settings
@@ -23,7 +24,20 @@ from .models import JobPost, Skill
 
 class JobViewSecurityTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.user = User.objects.create_user("user", password="test-password")
+
+    @override_settings(GMSKEY="", AI_RATE_LIMIT=2, AI_RATE_LIMIT_WINDOW=60)
+    def test_ai_endpoint_is_rate_limited_per_user(self):
+        self.client.force_login(self.user)
+        url = reverse("jobs:ai_analyze_company")
+
+        self.assertEqual(self.client.post(url).status_code, 400)
+        self.assertEqual(self.client.post(url).status_code, 400)
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(response["Retry-After"], "60")
 
     def test_company_analysis_page_requires_login(self):
         response = self.client.get(reverse("jobs:company_analysis"))
